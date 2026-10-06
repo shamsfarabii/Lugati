@@ -1,9 +1,7 @@
-import { router } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { getGreeting } from '@/components/home/getGreeting';
 import { HOME_MAX_FONT_SCALE } from '@/components/home/homeLayout';
-import { IconButton } from '@/components/ui/IconButton';
 import { COLORS, FONT_SIZES, FONT_WEIGHTS, SPACING } from '@/constants/theme';
 import { commonStyles } from '@/styles/commonStyles';
 
@@ -29,12 +27,6 @@ export function HomeHeader({ isCompact }: HomeHeaderProps) {
           Keep learning, one word at a time.
         </Text>
       </View>
-
-      <IconButton
-        icon="settings"
-        accessibilityLabel="Open settings"
-        onPress={() => router.push('/settings')}
-      />
     </View>
   );
 }

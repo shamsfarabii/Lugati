@@ -108,8 +108,8 @@ Screens (UI)  →  Services (rules)  →  Repositories (SQL)  →  SQLite
 
 Anyone can install the latest Android build from GitHub—no account required in the app itself.
 
-- **Latest APK:** [github.com/shamsfarabii/Arabiyyah/releases/latest/download/Lugati.apk](https://github.com/shamsfarabii/Arabiyyah/releases/latest/download/Lugati.apk)
-- **All releases:** [github.com/shamsfarabii/Arabiyyah/releases/latest](https://github.com/shamsfarabii/Arabiyyah/releases/latest)
+- **Latest APK:** [github.com/shamsfarabii/Lugati/releases/latest/download/Lugati.apk](https://github.com/shamsfarabii/Lugati/releases/latest/download/Lugati.apk)
+- **All releases:** [github.com/shamsfarabii/Lugati/releases/latest](https://github.com/shamsfarabii/Lugati/releases/latest)
 
 Inside the app, open **Settings** for the same download links.
 

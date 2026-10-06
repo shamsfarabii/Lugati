@@ -1,4 +1,4 @@
-export const GITHUB_REPOSITORY = 'shamsfarabii/Arabiyyah' as const;
+export const GITHUB_REPOSITORY = 'shamsfarabii/Lugati' as const;
 
 export const GITHUB_RELEASES_PAGE_URL =
   `https://github.com/${GITHUB_REPOSITORY}/releases/latest` as const;

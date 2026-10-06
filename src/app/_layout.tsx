@@ -47,7 +47,7 @@ export default function RootLayout() {
   if (!isReady) {
     return (
       <View style={styles.splash}>
-        <Image source={SPLASH_LOGO} style={styles.splashLogo} contentFit="contain" accessibilityLabel="Lugati" />
+        <Image source={SPLASH_LOGO} style={styles.splashLogo} contentFit="contain" />
         <ActivityIndicator size="small" color={COLORS.primary} style={styles.splashSpinner} />
       </View>
     );
