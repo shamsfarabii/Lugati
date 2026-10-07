@@ -16,9 +16,7 @@ import { AppIcon, type AppIconName } from '@/components/ui/AppIcon';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { ScreenScaffold } from '@/components/ui/ScreenScaffold';
-import { type ThemeColors, BORDER_RADIUS, FONT_SIZES, FONT_WEIGHTS, ICON_SIZES, SIZES, SPACING } from '@/constants/theme';
-import { useThemedStyles } from '@/theme/useThemedStyles';
-import { useTheme } from '@/theme/useTheme';
+import { BORDER_RADIUS, FONT_SIZES, FONT_WEIGHTS, ICON_SIZES, SIZES, SPACING, type ThemeColors } from '@/constants/theme';
 import {
   DAILY_REVIEW_PRESET_COUNTS,
   DEFAULT_DAILY_REVIEW_COUNT,
@@ -30,6 +28,8 @@ import { toReviewErrorMessage } from '@/features/review/services/reviewErrors';
 import { getReviewHomeState, startDailyReview } from '@/features/review/services/reviewService';
 import { createShadow } from '@/helpers/styleHelpers';
 import { commonStyles } from '@/styles/commonStyles';
+import { useTheme } from '@/theme/useTheme';
+import { useThemedStyles } from '@/theme/useThemedStyles';
 
 const CONTENT_MAX_WIDTH = 640;
 const MAX_FONT_SCALE = 1.4;
@@ -60,7 +60,7 @@ type ResumeInfo = {
 
 function formatEstimate(cardCount: number) {
   const minutes = Math.max(1, Math.round((cardCount * ESTIMATED_SECONDS_PER_CARD) / 60));
-  return `~${minutes} min`;
+  return `~ ${minutes} min`;
 }
 
 export function ReviewSetupScreen() {
@@ -357,8 +357,8 @@ export function ReviewSetupScreen() {
                   accessibilityLabel="Number of review cards"
                 />
                 <Text style={styles.stepperUnit} maxFontSizeMultiplier={MAX_FONT_SCALE}>
-                  {currentCount === 1 ? 'card' : 'cards'}
-                  {currentCount !== null ? ` · ${formatEstimate(currentCount)}` : ''}
+                  Estimated time
+                  {currentCount !== null ? ` ${formatEstimate(currentCount)}` : ''}
                 </Text>
               </View>
 
@@ -402,7 +402,7 @@ export function ReviewSetupScreen() {
                       maxFontSizeMultiplier={MAX_FONT_SCALE}
                       numberOfLines={1}
                     >
-                      {isAll ? `All (${preset})` : preset}
+                      {isAll ? `All` : preset}
                     </Text>
                   </Pressable>
                 );
@@ -450,7 +450,7 @@ export function ReviewSetupScreen() {
             </View>
           ) : null}
           <PrimaryButton
-            label={currentCount !== null ? `Start Review · ${currentCount}` : 'Start Review'}
+            label={currentCount !== null ? `Start Review (${currentCount})` : 'Start Review'}
             onPress={() => void handleStart()}
             disabled={!validation.ok}
             loading={isStarting}
@@ -585,8 +585,8 @@ function createStyles(colors: ThemeColors) {
     },
     heroDecoration: {
       position: 'absolute',
-      right: -SPACING.sm,
-      bottom: -SPACING.md,
+      right: 0,
+      top: -SPACING.md,
       fontSize: FONT_SIZES.decoration,
       fontWeight: FONT_WEIGHTS.bold,
       color: colors.decorationOverlay,

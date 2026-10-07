@@ -6,13 +6,13 @@ import { AppIcon, type AppIconName } from '@/components/ui/AppIcon';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { ScreenScaffold } from '@/components/ui/ScreenScaffold';
-import { type ThemeColors, BORDER_RADIUS, FONT_SIZES, FONT_WEIGHTS, ICON_SIZES, SIZES, SPACING } from '@/constants/theme';
-import { useThemedStyles } from '@/theme/useThemedStyles';
-import { useTheme } from '@/theme/useTheme';
+import { BORDER_RADIUS, FONT_SIZES, FONT_WEIGHTS, ICON_SIZES, SIZES, SPACING, type ThemeColors } from '@/constants/theme';
 import { MAX_VOCABULARY_EXAMPLES } from '@/features/vocabulary/constants';
 import type { Vocabulary } from '@/features/vocabulary/types';
 import { createShadow } from '@/helpers/styleHelpers';
 import { commonStyles } from '@/styles/commonStyles';
+import { useTheme } from '@/theme/useTheme';
+import { useThemedStyles } from '@/theme/useThemedStyles';
 
 type VocabularyDetailScreenProps = {
   vocabulary: Vocabulary;
@@ -96,33 +96,15 @@ export function VocabularyDetailScreen({
       />
 
       <View style={styles.heroCard}>
-        <View style={styles.heroDecoration} pointerEvents="none" />
-        <View style={[styles.heroDecoration, styles.heroDecorationSmall]} pointerEvents="none" />
-
         <Text style={styles.heroArabic} accessibilityLanguage="ar">
           {vocabulary.arabicWord}
         </Text>
         <View style={styles.heroDivider} />
         <Text style={styles.heroMeaning}>{vocabulary.meaning}</Text>
-
-        {addedOn ? (
-          <View style={[commonStyles.row, commonStyles.centered, styles.heroMetaRow]}>
-            <AppIcon
-              name="calendar"
-              size={ICON_SIZES.sm - 4}
-              color={colors.textOnDarkCardMuted}
-              weight="semibold"
-            />
-            <Text style={styles.heroMeta}>
-              Added {addedOn}
-              {showUpdated ? `  ·  Updated ${updatedOn}` : ''}
-            </Text>
-          </View>
-        ) : null}
       </View>
 
       {hasExamples ? (
-        <Section icon="quote" title="Examples" count={displayExamples.length}>
+        <Section icon="quote" title="Examples">
           <View style={styles.card}>
             {displayExamples.map((example, index) => (
               <View
@@ -133,9 +115,6 @@ export function VocabularyDetailScreen({
                   index !== displayExamples.length - 1 && styles.exampleRowBorder,
                 ]}
               >
-                <View style={[styles.exampleBadge, commonStyles.centered]}>
-                  <Text style={styles.exampleBadgeText}>{index + 1}</Text>
-                </View>
                 <View style={styles.exampleContent}>
                   <Text style={styles.exampleSentence} accessibilityLanguage="ar">
                     {example.sentence}
@@ -260,7 +239,6 @@ function createStyles(colors: ThemeColors) {
     },
     heroMeaning: {
       fontSize: FONT_SIZES.xxxl,
-      lineHeight: 26,
       fontWeight: FONT_WEIGHTS.semibold,
       color: colors.textOnDarkCard,
       textAlign: 'center',

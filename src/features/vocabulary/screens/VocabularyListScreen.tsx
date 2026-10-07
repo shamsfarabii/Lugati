@@ -16,9 +16,6 @@ import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { ScreenScaffold } from '@/components/ui/ScreenScaffold';
 import { type ThemeColors, BORDER_RADIUS, FONT_SIZES, FONT_WEIGHTS, ICON_SIZES, SIZES, SPACING } from '@/constants/theme';
-import { useThemedStyles } from '@/theme/useThemedStyles';
-import { useTheme } from '@/theme/useTheme';
-import type { Vocabulary } from '@/features/vocabulary/types';
 import {
   importVocabularyFromFile,
   loadVocabularyForExport,
@@ -31,8 +28,11 @@ import {
   removeVocabularies,
   removeVocabulary,
 } from '@/features/vocabulary/services/vocabularyService';
+import type { Vocabulary } from '@/features/vocabulary/types';
 import { createShadow } from '@/helpers/styleHelpers';
 import { commonStyles } from '@/styles/commonStyles';
+import { useTheme } from '@/theme/useTheme';
+import { useThemedStyles } from '@/theme/useThemedStyles';
 import { appAlert } from '@/utils/appAlert';
 
 const IMPORT_ICON = require('../../../../assets/icons/import.svg') as number;
@@ -533,7 +533,7 @@ export function VocabularyListScreen() {
         </View>
       ) : null}
 
-      {!isLoading && !loadError && items.length === 0 && isSearching ? (
+      {!isLoading && !loadError && !items.length && isSearching ? (
         <View style={styles.emptyState}>
           <View style={[styles.emptyIcon, commonStyles.centered]}>
             <AppIcon name="search" size={ICON_SIZES.xxl} color={colors.primary} />
@@ -553,7 +553,7 @@ export function VocabularyListScreen() {
         </View>
       ) : null}
 
-      {!isLoading && !loadError && items.length === 0 && !isSearching ? (
+      {!isLoading && !loadError && !items.length && !isSearching ? (
         <View style={styles.emptyState}>
           <View style={[styles.emptyIcon, commonStyles.centered]}>
             <AppIcon name="book" size={ICON_SIZES.xxl} color={colors.primary} />
@@ -715,11 +715,7 @@ export function VocabularyListScreen() {
 
 function describeVocabularyDetails(item: Vocabulary): string {
   const parts: string[] = [];
-  const exampleCount = item.examples.length;
-
-  if (exampleCount > 0) {
-    parts.push(`${exampleCount} example${exampleCount === 1 ? '' : 's'}`);
-  }
+  
   if (item.description?.trim()) {
     parts.push('Notes');
   }

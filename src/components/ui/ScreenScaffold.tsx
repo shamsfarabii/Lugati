@@ -42,7 +42,7 @@ export function ScreenScaffold({
         <ScrollView
           contentContainerStyle={[styles.content, contentContainerStyle]}
           keyboardShouldPersistTaps="handled"
-          keyboardDismissMode="on-drag"
+          keyboardDismissMode="none"
           automaticallyAdjustKeyboardInsets
           showsVerticalScrollIndicator={false}
         >
