@@ -81,8 +81,13 @@ function AppRoot() {
   return (
     <AppAlertProvider>
       <View style={styles.app}>
-        <View style={styles.app}>
-          <Stack screenOptions={{ headerShown: false }} />
+        <View style={styles.stackSlot}>
+          <Stack
+            screenOptions={{
+              headerShown: false,
+              contentStyle: styles.stackScreen,
+            }}
+          />
         </View>
         <BottomNav />
       </View>
@@ -93,6 +98,14 @@ function AppRoot() {
 function createStyles(colors: ThemeColors) {
   return StyleSheet.create({
     app: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    stackSlot: {
+      flex: 1,
+      minHeight: 0,
+    },
+    stackScreen: {
       flex: 1,
       backgroundColor: colors.background,
     },

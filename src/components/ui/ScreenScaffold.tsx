@@ -1,5 +1,5 @@
 import { ScrollView, StyleSheet, View, type ViewProps } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, type Edge } from 'react-native-safe-area-context';
 
 import { SPACING, type ThemeColors } from '@/constants/theme';
 import { useThemedStyles } from '@/theme/useThemedStyles';
@@ -7,6 +7,8 @@ import { useThemedStyles } from '@/theme/useThemedStyles';
 type ScreenScaffoldProps = ViewProps & {
   scroll?: boolean;
   contentContainerStyle?: ViewProps['style'];
+  /** Omit `bottom` on tab screens so content uses the stack slot above the bottom nav. */
+  safeAreaEdges?: Edge[];
 };
 
 function createStyles(colors: ThemeColors) {
@@ -23,6 +25,7 @@ function createStyles(colors: ThemeColors) {
     },
     flex: {
       flex: 1,
+      minHeight: 0,
     },
   });
 }
@@ -32,13 +35,15 @@ export function ScreenScaffold({
   scroll = true,
   style,
   contentContainerStyle,
+  safeAreaEdges,
   ...viewProps
 }: ScreenScaffoldProps) {
   const styles = useThemedStyles(createStyles);
+  const safeAreaProps = safeAreaEdges ? { edges: safeAreaEdges } : {};
 
   if (scroll) {
     return (
-      <SafeAreaView style={styles.safeArea}>
+      <SafeAreaView style={styles.safeArea} {...safeAreaProps}>
         <ScrollView
           contentContainerStyle={[styles.content, contentContainerStyle]}
           keyboardShouldPersistTaps="handled"
@@ -53,7 +58,7 @@ export function ScreenScaffold({
   }
 
   return (
-    <SafeAreaView style={[styles.safeArea, styles.flex]}>
+    <SafeAreaView style={[styles.safeArea, styles.flex]} {...safeAreaProps}>
       <View
         style={[styles.content, styles.flex, contentContainerStyle, style]}
         {...viewProps}

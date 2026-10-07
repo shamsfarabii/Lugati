@@ -42,6 +42,10 @@ const HIDDEN_ON_PATHS = ['/quiz/session', '/review/session'];
 
 const NAV_MAX_WIDTH = 560;
 const MAX_FONT_SCALE = 1.3;
+/** Shared bounding box for tab icons (SVG assets fill the box; symbols need a larger point size). */
+const NAV_ICON_BOX = ICON_SIZES.xl;
+const NAV_SYMBOL_SIZE = ICON_SIZES.xxl;
+const NAV_SELECTED_MARK_BORDER_RADIUS = BORDER_RADIUS.xs;
 
 function getSectionForPath(pathname: string): NavKey | null {
   if (pathname === '/') return 'home';
@@ -126,14 +130,14 @@ export function BottomNav() {
               style={({ pressed }) => [styles.item, pressed && !isActive && styles.itemPressed]}
             >
               {({ pressed }) => (
-                <>
-                  <View
-                    style={[
-                      styles.iconWrap,
-                      isActive && styles.iconWrapActive,
-                      pressed && !isActive && styles.iconWrapPressed,
-                    ]}
-                  >
+                <View
+                  style={[
+                    styles.selectedMark,
+                    isActive && styles.selectedMarkActive,
+                    pressed && !isActive && styles.selectedMarkPressed,
+                  ]}
+                >
+                  <View style={styles.iconWrap}>
                     {item.icon.kind === 'image' ? (
                       <Image
                         source={item.icon.source}
@@ -143,7 +147,7 @@ export function BottomNav() {
                         accessible={false}
                       />
                     ) : (
-                      <AppIcon name={item.icon.name} size={ICON_SIZES.lg} color={iconColor} />
+                      <AppIcon name={item.icon.name} size={NAV_SYMBOL_SIZE} color={iconColor} />
                     )}
                   </View>
                   <Text
@@ -153,7 +157,7 @@ export function BottomNav() {
                   >
                     {item.label}
                   </Text>
-                </>
+                </View>
               )}
             </Pressable>
           );
@@ -185,29 +189,38 @@ function createStyles(colors: ThemeColors) {
       minHeight: 52,
       alignItems: 'center',
       justifyContent: 'center',
-      gap: 2,
       paddingHorizontal: SPACING.xs,
     },
     itemPressed: {
       opacity: 0.85,
     },
-    iconWrap: {
-      width: 52,
-      height: 30,
+    selectedMark: {
       alignItems: 'center',
       justifyContent: 'center',
-      borderRadius: BORDER_RADIUS.round,
+      gap: 2,
+      minWidth: 52,
+      paddingHorizontal: SPACING.sm,
+      paddingVertical: SPACING.xs,
+      borderRadius: NAV_SELECTED_MARK_BORDER_RADIUS,
+      overflow: 'hidden',
     },
-    iconWrapActive: {
+    selectedMarkActive: {
       backgroundColor: colors.surfaceMuted,
-      borderRadius: BORDER_RADIUS.xs,
+      borderRadius: NAV_SELECTED_MARK_BORDER_RADIUS,
     },
-    iconWrapPressed: {
+    selectedMarkPressed: {
       backgroundColor: colors.surfacePressed,
+      borderRadius: NAV_SELECTED_MARK_BORDER_RADIUS,
+    },
+    iconWrap: {
+      width: NAV_ICON_BOX,
+      height: NAV_ICON_BOX,
+      alignItems: 'center',
+      justifyContent: 'center',
     },
     imageIcon: {
-      width: ICON_SIZES.lg,
-      height: ICON_SIZES.lg,
+      width: NAV_ICON_BOX,
+      height: NAV_ICON_BOX,
     },
     label: {
       fontSize: FONT_SIZES.xs,

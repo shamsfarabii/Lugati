@@ -353,11 +353,14 @@ export function VocabularyListScreen() {
     setSelectedIds(isAllSelected ? new Set() : new Set(items.map((item) => item.id)));
   }, [isAllSelected, items]);
 
-  const headerTitle = isSelectionMode ? 'Select words' : 'Vocabulary';
+  const headerTitle = isSelectionMode
+    ? 'Select words'
+    : isLoading && items.length === 0
+      ? 'Vocabulary'
+      : `Vocabulary (${items.length})`;
   const isBusy = isShareBusy || isImportBusy || isDeleteBusy;
   const trimmedQuery = searchQuery.trim();
   const isSearching = trimmedQuery.length > 0;
-  const countLabel = `${items.length} ${isSearching ? 'result' : 'word'}${items.length === 1 ? '' : 's'}`;
 
   const headerRight = useMemo(() => {
     if (isSelectionMode) {
@@ -395,7 +398,12 @@ export function VocabularyListScreen() {
   }, [colors.textOnPrimary, exitSelectionMode, isSelectionMode, styles]);
 
   return (
-    <ScreenScaffold scroll={false}>
+    <ScreenScaffold
+      scroll={false}
+      safeAreaEdges={['top', 'left', 'right']}
+      contentContainerStyle={styles.scaffoldContent}
+    >
+      <View style={styles.scaffoldBody}>
       <ScreenHeader
         title={headerTitle}
         subtitle={
@@ -416,91 +424,84 @@ export function VocabularyListScreen() {
       />
 
       {!isSelectionMode ? (
-        <View style={[commonStyles.row, commonStyles.alignCenter, styles.searchBar]}>
-          <AppIcon name="search" size={ICON_SIZES.sm} color={colors.textMuted} weight="semibold" />
-          <TextInput
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            placeholder="Search Arabic or meaning"
-            placeholderTextColor={colors.textMutedSecondary}
-            selectionColor={colors.primary}
-            style={styles.searchInput}
-            autoCorrect={false}
-            autoCapitalize="none"
-            returnKeyType="search"
-            accessibilityLabel="Search vocabulary"
-          />
-          {isSearching ? (
-            <Pressable
-              onPress={() => setSearchQuery('')}
-              hitSlop={10}
-              accessibilityRole="button"
-              accessibilityLabel="Clear search"
-              style={({ pressed }) => pressed && styles.pressed}
-            >
-              <AppIcon
-                name="xmarkCircle"
-                size={ICON_SIZES.md}
-                color={colors.chevron}
-                weight="regular"
-              />
-            </Pressable>
-          ) : null}
+        <View style={[commonStyles.row, commonStyles.alignCenter, styles.searchRow]}>
+          <View style={[commonStyles.row, commonStyles.alignCenter, commonStyles.grow, styles.searchBar]}>
+            <AppIcon name="search" size={ICON_SIZES.sm} color={colors.textMuted} weight="semibold" />
+            <TextInput
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              placeholder="Search Arabic or meaning"
+              placeholderTextColor={colors.textMutedSecondary}
+              selectionColor={colors.primary}
+              style={styles.searchInput}
+              autoCorrect={false}
+              autoCapitalize="none"
+              returnKeyType="search"
+              accessibilityLabel="Search vocabulary"
+            />
+            {isSearching ? (
+              <Pressable
+                onPress={() => setSearchQuery('')}
+                hitSlop={10}
+                accessibilityRole="button"
+                accessibilityLabel="Clear search"
+                style={({ pressed }) => pressed && styles.pressed}
+              >
+                <AppIcon
+                  name="xmarkCircle"
+                  size={ICON_SIZES.md}
+                  color={colors.chevron}
+                  weight="regular"
+                />
+              </Pressable>
+            ) : null}
+          </View>
+          <View style={[commonStyles.row, styles.searchActions]}>
+            <IconButton
+              icon={{ kind: 'image', source: IMPORT_ICON }}
+              onPress={handleImport}
+              disabled={isImportBusy}
+              accessibilityLabel="Import vocabulary from file"
+              style={styles.searchActionButton}
+            />
+            <IconButton
+              icon={{ kind: 'image', source: EXPORT_ICON }}
+              onPress={openExportMenu}
+              disabled={isShareBusy}
+              accessibilityLabel="Export vocabulary to file"
+              style={styles.searchActionButton}
+            />
+            <IconButton
+              icon="trash"
+              tone="danger"
+              onPress={openDeleteMenu}
+              disabled={isDeleteBusy}
+              accessibilityLabel="Delete vocabulary"
+              style={styles.searchActionButton}
+            />
+          </View>
         </View>
       ) : null}
 
-      <View style={[commonStyles.row, commonStyles.alignCenter, styles.toolbar]}>
-        {isSelectionMode ? (
-          <>
-            <Text style={styles.toolbarLabel}>
-              {selectedCount} of {items.length} selected
+      {isSelectionMode ? (
+        <View style={[commonStyles.row, commonStyles.alignCenter, styles.toolbar]}>
+          <Text style={styles.toolbarLabel}>
+            {selectedCount} of {items.length} selected
+          </Text>
+          <View style={commonStyles.grow} />
+          <Pressable
+            onPress={toggleSelectAll}
+            disabled={items.length === 0}
+            hitSlop={8}
+            accessibilityRole="button"
+            style={({ pressed }) => pressed && styles.pressed}
+          >
+            <Text style={styles.toolbarLink}>
+              {isAllSelected ? 'Deselect all' : 'Select all'}
             </Text>
-            <View style={commonStyles.grow} />
-            <Pressable
-              onPress={toggleSelectAll}
-              disabled={items.length === 0}
-              hitSlop={8}
-              accessibilityRole="button"
-              style={({ pressed }) => pressed && styles.pressed}
-            >
-              <Text style={styles.toolbarLink}>
-                {isAllSelected ? 'Deselect all' : 'Select all'}
-              </Text>
-            </Pressable>
-          </>
-        ) : (
-          <>
-            <Text style={styles.toolbarLabel}>
-              {isLoading && items.length === 0 ? ' ' : countLabel}
-            </Text>
-            <View style={commonStyles.grow} />
-            <View style={[commonStyles.row, styles.toolbarActions]}>
-              <IconButton
-                icon={{ kind: 'image', source: IMPORT_ICON }}
-                onPress={handleImport}
-                disabled={isImportBusy}
-                accessibilityLabel="Import vocabulary from file"
-                style={styles.toolbarButton}
-              />
-              <IconButton
-                icon={{ kind: 'image', source: EXPORT_ICON }}
-                onPress={openExportMenu}
-                disabled={isShareBusy}
-                accessibilityLabel="Export vocabulary to file"
-                style={styles.toolbarButton}
-              />
-              <IconButton
-                icon="trash"
-                tone="danger"
-                onPress={openDeleteMenu}
-                disabled={isDeleteBusy}
-                accessibilityLabel="Delete vocabulary"
-                style={styles.toolbarButton}
-              />
-            </View>
-          </>
-        )}
-      </View>
+          </Pressable>
+        </View>
+      ) : null}
 
       {isBusy ? (
         <View style={[commonStyles.row, commonStyles.alignCenter, styles.busyBanner]}>
@@ -670,6 +671,7 @@ export function VocabularyListScreen() {
           </View>
         </ScrollView>
       ) : null}
+      </View>
 
       {isSelectionMode ? (
         <View style={styles.selectionFooter}>
@@ -729,6 +731,14 @@ function describeVocabularyDetails(item: Vocabulary): string {
 function createStyles(colors: ThemeColors) {
   const listShadow = createShadow(2, colors.shadow, 0.06, 4);
   return StyleSheet.create({
+    scaffoldContent: {
+      paddingTop: SPACING.lg,
+      paddingBottom: SPACING.xs,
+    },
+    scaffoldBody: {
+      flex: 1,
+      minHeight: 0,
+    },
     headerTextAction: {
       paddingHorizontal: SPACING.xs,
       paddingVertical: SPACING.xs,
@@ -752,7 +762,14 @@ function createStyles(colors: ThemeColors) {
     pressed: {
       opacity: 0.6,
     },
+    searchRow: {
+      gap: SPACING.sm,
+      marginBottom: SPACING.xs,
+      minWidth: 0,
+    },
     searchBar: {
+      flex: 1,
+      minWidth: 0,
       minHeight: 46,
       paddingHorizontal: SPACING.md - 2,
       gap: SPACING.sm,
@@ -760,6 +777,14 @@ function createStyles(colors: ThemeColors) {
       borderColor: colors.border,
       borderRadius: BORDER_RADIUS.lg,
       backgroundColor: colors.card,
+    },
+    searchActions: {
+      gap: SPACING.xs,
+      flexShrink: 0,
+    },
+    searchActionButton: {
+      width: 36,
+      height: 36,
     },
     searchInput: {
       flex: 1,
@@ -770,7 +795,6 @@ function createStyles(colors: ThemeColors) {
     },
     toolbar: {
       minHeight: SIZES.iconButton + SPACING.md,
-      marginTop: SPACING.sm,
       marginBottom: SPACING.xs,
       paddingHorizontal: SPACING.xs,
     },
@@ -785,13 +809,6 @@ function createStyles(colors: ThemeColors) {
       fontSize: FONT_SIZES.md,
       fontWeight: FONT_WEIGHTS.semibold,
       color: colors.primary,
-    },
-    toolbarActions: {
-      gap: SPACING.sm,
-    },
-    toolbarButton: {
-      width: 36,
-      height: 36,
     },
     busyBanner: {
       alignSelf: 'flex-start',
@@ -809,13 +826,15 @@ function createStyles(colors: ThemeColors) {
     },
     listScroll: {
       flex: 1,
+      minHeight: 0,
     },
     listContent: {
-      paddingTop: SPACING.xs,
-      paddingBottom: SPACING.md,
+      flexGrow: 1,
+      paddingTop: SPACING.lg,
+      paddingBottom: SPACING.lg,
     },
     listContentWithFooter: {
-      paddingBottom: SPACING.xl,
+      paddingBottom: SPACING.lg,
     },
     list: {
       borderRadius: BORDER_RADIUS.xxl,
