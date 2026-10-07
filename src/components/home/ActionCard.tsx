@@ -1,3 +1,4 @@
+import { Image } from 'expo-image';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { HOME_MAX_FONT_SCALE } from '@/components/home/homeLayout';
@@ -16,8 +17,12 @@ import { commonStyles } from '@/styles/commonStyles';
 
 type ActionCardVariant = 'primary' | 'secondary';
 
+type ActionCardIcon =
+  | { kind: 'symbol'; name: AppIconName }
+  | { kind: 'image'; source: number };
+
 type ActionCardProps = {
-  icon: AppIconName;
+  icon: ActionCardIcon;
   title: string;
   description: string;
   buttonLabel: string;
@@ -52,7 +57,17 @@ export function ActionCard({
     <View style={[styles.actionCard, isWide && styles.actionCardWide]}>
       <View style={[commonStyles.row, commonStyles.alignCenter]}>
         <View style={[commonStyles.centered, styles.actionIcon]}>
-          <AppIcon name={icon} size={ICON_SIZES.xl} color={COLORS.primary} />
+          {icon.kind === 'image' ? (
+            <Image
+              source={icon.source}
+              style={styles.imageIcon}
+              contentFit="contain"
+              tintColor={COLORS.primary}
+              accessible={false}
+            />
+          ) : (
+            <AppIcon name={icon.name} size={ICON_SIZES.xl} color={COLORS.primary} />
+          )}
         </View>
 
         <View style={[commonStyles.grow, styles.actionContent]}>
@@ -131,6 +146,10 @@ const styles = StyleSheet.create({
     height: SIZES.practiceIcon,
     borderRadius: BORDER_RADIUS.md,
     backgroundColor: COLORS.surfaceMuted,
+  },
+  imageIcon: {
+    width: ICON_SIZES.xl,
+    height: ICON_SIZES.xl,
   },
   actionContent: {
     marginLeft: SPACING.md - 2,

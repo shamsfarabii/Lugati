@@ -1,10 +1,12 @@
 import { router } from 'expo-router';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { ActionCard } from '@/components/home/ActionCard';
 import type { HomeReviewCard } from '@/components/home/buildHomeView';
-import { HOME_MAX_FONT_SCALE } from '@/components/home/homeLayout';
 import { COLORS, FONT_SIZES, FONT_WEIGHTS, SPACING } from '@/constants/theme';
+
+const REVIEW_ICON = require('../../../assets/icons/review.svg') as number;
+const QUIZ_ICON = require('../../../assets/icons/quiz.svg') as number;
 
 type PracticeSectionProps = {
   isWide: boolean;
@@ -27,13 +29,9 @@ export function PracticeSection({ isWide, review, quizDescription }: PracticeSec
 
   return (
     <View>
-      <Text style={styles.sectionTitle} maxFontSizeMultiplier={HOME_MAX_FONT_SCALE}>
-        Practice
-      </Text>
-
       <View style={[styles.actions, isWide && styles.actionsWide]}>
         <ActionCard
-          icon="refresh"
+          icon={{ kind: 'image', source: REVIEW_ICON }}
           title="Daily Review"
           description={review.description}
           buttonLabel={review.buttonLabel}
@@ -45,7 +43,7 @@ export function PracticeSection({ isWide, review, quizDescription }: PracticeSec
         />
 
         <ActionCard
-          icon="quiz"
+          icon={{ kind: 'image', source: QUIZ_ICON }}
           title="Quiz"
           description={quizDescription}
           buttonLabel="Attempt Quiz"

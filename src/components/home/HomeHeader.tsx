@@ -13,15 +13,8 @@ export function HomeHeader({ isCompact }: HomeHeaderProps) {
   return (
     <View style={[commonStyles.row, commonStyles.alignCenter, styles.header]}>
       <View style={styles.headerText}>
-        <Text style={styles.greeting} maxFontSizeMultiplier={HOME_MAX_FONT_SCALE}>
+        <Text style={[styles.title, isCompact && styles.titleCompact]} maxFontSizeMultiplier={HOME_MAX_FONT_SCALE}>
           {getGreeting()}
-        </Text>
-        <Text
-          style={[styles.title, isCompact && styles.titleCompact]}
-          maxFontSizeMultiplier={HOME_MAX_FONT_SCALE}
-          numberOfLines={1}
-        >
-          Lugati
         </Text>
         <Text style={styles.subtitle} maxFontSizeMultiplier={HOME_MAX_FONT_SCALE}>
           Keep learning, one word at a time.

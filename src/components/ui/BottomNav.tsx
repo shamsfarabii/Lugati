@@ -1,3 +1,4 @@
+import { Image } from 'expo-image';
 import { router, usePathname, type Href } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Keyboard, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
@@ -16,18 +17,30 @@ import { createShadow } from '@/helpers/styleHelpers';
 
 type NavKey = 'home' | 'quiz' | 'review' | 'settings';
 
+type NavItemIcon =
+  | { kind: 'symbol'; name: AppIconName }
+  | { kind: 'image'; source: number };
+
 type NavItem = {
   key: NavKey;
   label: string;
-  icon: AppIconName;
+  icon: NavItemIcon;
   href: Href;
 };
 
+const QUIZ_ICON = require('../../../assets/icons/quiz.svg') as number;
+const REVIEW_ICON = require('../../../assets/icons/review.svg') as number;
+
 const NAV_ITEMS: NavItem[] = [
-  { key: 'home', label: 'Home', icon: 'home', href: '/' },
-  { key: 'quiz', label: 'Quiz', icon: 'quiz', href: '/quiz' },
-  { key: 'review', label: 'Review', icon: 'refresh', href: '/review' },
-  { key: 'settings', label: 'Settings', icon: 'settings', href: '/settings' },
+  { key: 'home', label: 'Home', icon: { kind: 'symbol', name: 'home' }, href: '/' },
+  { key: 'quiz', label: 'Quiz', icon: { kind: 'image', source: QUIZ_ICON }, href: '/quiz' },
+  { key: 'review', label: 'Review', icon: { kind: 'image', source: REVIEW_ICON }, href: '/review' },
+  {
+    key: 'settings',
+    label: 'Settings',
+    icon: { kind: 'symbol', name: 'settings' },
+    href: '/settings',
+  },
 ];
 
 const HIDDEN_ON_PATHS = ['/quiz/session', '/review/session'];
@@ -102,6 +115,7 @@ export function BottomNav() {
       <View style={[styles.bar, { paddingLeft: insets.left, paddingRight: insets.right }]}>
         {NAV_ITEMS.map((item) => {
           const isActive = item.key === currentSection;
+          const iconColor = isActive ? COLORS.primary : COLORS.textMuted;
 
           return (
             <Pressable
@@ -122,11 +136,17 @@ export function BottomNav() {
                       pressed && !isActive && styles.iconWrapPressed,
                     ]}
                   >
-                    <AppIcon
-                      name={item.icon}
-                      size={ICON_SIZES.lg}
-                      color={isActive ? COLORS.primary : COLORS.textMuted}
-                    />
+                    {item.icon.kind === 'image' ? (
+                      <Image
+                        source={item.icon.source}
+                        style={styles.imageIcon}
+                        contentFit="contain"
+                        tintColor={iconColor}
+                        accessible={false}
+                      />
+                    ) : (
+                      <AppIcon name={item.icon.name} size={ICON_SIZES.lg} color={iconColor} />
+                    )}
                   </View>
                   <Text
                     style={[styles.label, isActive && styles.labelActive]}
@@ -182,9 +202,14 @@ const styles = StyleSheet.create({
   },
   iconWrapActive: {
     backgroundColor: COLORS.surfaceMuted,
+    borderRadius: BORDER_RADIUS.xs,
   },
   iconWrapPressed: {
     backgroundColor: COLORS.surfacePressed,
+  },
+  imageIcon: {
+    width: ICON_SIZES.lg,
+    height: ICON_SIZES.lg,
   },
   label: {
     fontSize: FONT_SIZES.xs,

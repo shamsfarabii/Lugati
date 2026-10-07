@@ -1,3 +1,4 @@
+import { Image } from 'expo-image';
 import { Pressable, StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
 
 import { AppIcon, type AppIconName } from '@/components/ui/AppIcon';
@@ -11,8 +12,13 @@ import { commonStyles } from '@/styles/commonStyles';
 
 type IconButtonTone = 'neutral' | 'danger' | 'overlay';
 
+export type IconButtonIcon =
+  | AppIconName
+  | { kind: 'symbol'; name: AppIconName }
+  | { kind: 'image'; source: number };
+
 type IconButtonProps = {
-  icon: AppIconName;
+  icon: IconButtonIcon;
   onPress: () => void;
   accessibilityLabel: string;
   accessibilityHint?: string;
@@ -27,6 +33,16 @@ const TONE_ICON_COLOR: Record<IconButtonTone, string> = {
   overlay: COLORS.textOnPrimary,
 };
 
+function resolveIconButtonIcon(
+  icon: IconButtonIcon,
+): { kind: 'symbol'; name: AppIconName } | { kind: 'image'; source: number } {
+  if (typeof icon === 'string') {
+    return { kind: 'symbol', name: icon };
+  }
+
+  return icon;
+}
+
 export function IconButton({
   icon,
   onPress,
@@ -36,6 +52,9 @@ export function IconButton({
   disabled = false,
   style,
 }: IconButtonProps) {
+  const resolvedIcon = resolveIconButtonIcon(icon);
+  const iconColor = TONE_ICON_COLOR[tone];
+
   return (
     <Pressable
       onPress={onPress}
@@ -56,12 +75,17 @@ export function IconButton({
         style,
       ]}
     >
-      <AppIcon
-        name={icon}
-        size={ICON_SIZES.sm}
-        color={TONE_ICON_COLOR[tone]}
-        weight="semibold"
-      />
+      {resolvedIcon.kind === 'image' ? (
+        <Image
+          source={resolvedIcon.source}
+          style={styles.imageIcon}
+          contentFit="contain"
+          tintColor={iconColor}
+          accessible={false}
+        />
+      ) : (
+        <AppIcon name={resolvedIcon.name} size={ICON_SIZES.sm} color={iconColor} weight="semibold" />
+      )}
     </Pressable>
   );
 }
@@ -91,5 +115,9 @@ const styles = StyleSheet.create({
   pressed: {
     opacity: 0.7,
     transform: [{ scale: 0.96 }],
+  },
+  imageIcon: {
+    width: ICON_SIZES.sm,
+    height: ICON_SIZES.sm,
   },
 });

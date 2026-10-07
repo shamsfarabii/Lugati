@@ -8,6 +8,10 @@ import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { ScreenScaffold } from '@/components/ui/ScreenScaffold';
 import {
+  GITHUB_RELEASES_PAGE_URL,
+  LATEST_APK_DOWNLOAD_URL,
+} from '@/constants/appLinks';
+import {
   BORDER_RADIUS,
   COLORS,
   FONT_SIZES,
@@ -15,15 +19,11 @@ import {
   ICON_SIZES,
   SPACING,
 } from '@/constants/theme';
-import {
-  GITHUB_RELEASES_PAGE_URL,
-  LATEST_APK_DOWNLOAD_URL,
-} from '@/constants/appLinks';
 import { resetUserProgress } from '@/features/settings/services/settingsService';
-import { openExternalUrl } from '@/utils/openExternalUrl';
 import { createShadow } from '@/helpers/styleHelpers';
-import { appAlert } from '@/utils/appAlert';
 import { commonStyles } from '@/styles/commonStyles';
+import { appAlert } from '@/utils/appAlert';
+import { openExternalUrl } from '@/utils/openExternalUrl';
 
 const cardShadow = createShadow(2, COLORS.accent, 0.06, 10, { width: 0, height: 4 });
 
@@ -104,7 +104,7 @@ export function SettingsScreen() {
                 Download the newest Android build from our public GitHub releases. You may need
                 to allow installs from your browser or file manager.
               </Text>
-              <Text
+              {/* <Text
                 style={styles.linkText}
                 accessibilityRole="link"
                 onPress={() => {
@@ -112,7 +112,7 @@ export function SettingsScreen() {
                 }}
               >
                 {LATEST_APK_DOWNLOAD_URL}
-              </Text>
+              </Text> */}
             </View>
           </View>
 
@@ -129,7 +129,6 @@ export function SettingsScreen() {
           <PrimaryButton
             label="All releases on GitHub"
             variant="secondary"
-            leading={<AppIcon name="share" size={ICON_SIZES.sm} color={COLORS.primary} />}
             onPress={() => {
               void openReleasesPage();
             }}
@@ -141,6 +140,7 @@ export function SettingsScreen() {
       <FormSection
         title="Learning data"
         hint="Use this if you want a fresh start without deleting your words."
+        style={{marginTop: SPACING.lg}}
       >
         <View style={styles.card}>
           <View style={[commonStyles.row, styles.cardHeader]}>

@@ -38,8 +38,11 @@ import {
   removeVocabulary,
 } from '@/features/vocabulary/services/vocabularyService';
 import { createShadow } from '@/helpers/styleHelpers';
-import { appAlert } from '@/utils/appAlert';
 import { commonStyles } from '@/styles/commonStyles';
+import { appAlert } from '@/utils/appAlert';
+
+const IMPORT_ICON = require('../../../../assets/icons/import.svg') as number;
+const EXPORT_ICON = require('../../../../assets/icons/export.svg') as number;
 
 type SelectionPurpose = 'export' | 'delete';
 
@@ -476,14 +479,14 @@ export function VocabularyListScreen() {
             <View style={commonStyles.grow} />
             <View style={[commonStyles.row, styles.toolbarActions]}>
               <IconButton
-                icon="importDoc"
+                icon={{ kind: 'image', source: IMPORT_ICON }}
                 onPress={handleImport}
                 disabled={isImportBusy}
                 accessibilityLabel="Import vocabulary from file"
                 style={styles.toolbarButton}
               />
               <IconButton
-                icon="share"
+                icon={{ kind: 'image', source: EXPORT_ICON }}
                 onPress={openExportMenu}
                 disabled={isShareBusy}
                 accessibilityLabel="Export vocabulary to file"
