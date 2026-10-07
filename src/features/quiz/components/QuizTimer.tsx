@@ -1,13 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import {
-  BORDER_RADIUS,
-  COLORS,
-  FONT_SIZES,
-  FONT_WEIGHTS,
-  SIZES,
-  SPACING,
-} from '@/constants/theme';
+import { type ThemeColors, BORDER_RADIUS, FONT_SIZES, FONT_WEIGHTS, SIZES, SPACING } from '@/constants/theme';
+import { useThemedStyles } from '@/theme/useThemedStyles';
 import { commonStyles } from '@/styles/commonStyles';
 
 const WARNING_THRESHOLD_SECONDS = 3;
@@ -19,6 +13,8 @@ type QuizTimerProps = {
 };
 
 export function QuizTimer({ remainingSeconds, totalSeconds, isRunning }: QuizTimerProps) {
+  const styles = useThemedStyles(createStyles);
+
   const safeTotal = Math.max(totalSeconds, 1);
   const ratio = Math.min(Math.max(remainingSeconds / safeTotal, 0), 1);
   const isWarning = isRunning && remainingSeconds <= WARNING_THRESHOLD_SECONDS;
@@ -48,35 +44,37 @@ export function QuizTimer({ remainingSeconds, totalSeconds, isRunning }: QuizTim
   );
 }
 
-const styles = StyleSheet.create({
-  wrapper: {
-    gap: SPACING.xs,
-    marginBottom: SPACING.md,
-  },
-  label: {
-    fontSize: FONT_SIZES.sm,
-    color: COLORS.textMuted,
-  },
-  seconds: {
-    fontSize: FONT_SIZES.xxl,
-    fontWeight: FONT_WEIGHTS.bold,
-    color: COLORS.text,
-  },
-  secondsWarning: {
-    color: COLORS.danger,
-  },
-  track: {
-    height: SIZES.quizTimerTrackHeight,
-    borderRadius: BORDER_RADIUS.round,
-    backgroundColor: COLORS.border,
-    overflow: 'hidden',
-  },
-  fill: {
-    height: '100%',
-    borderRadius: BORDER_RADIUS.round,
-    backgroundColor: COLORS.primary,
-  },
-  fillWarning: {
-    backgroundColor: COLORS.danger,
-  },
-});
+function createStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    wrapper: {
+      gap: SPACING.xs,
+      marginBottom: SPACING.md,
+    },
+    label: {
+      fontSize: FONT_SIZES.sm,
+      color: colors.textMuted,
+    },
+    seconds: {
+      fontSize: FONT_SIZES.xxl,
+      fontWeight: FONT_WEIGHTS.bold,
+      color: colors.text,
+    },
+    secondsWarning: {
+      color: colors.danger,
+    },
+    track: {
+      height: SIZES.quizTimerTrackHeight,
+      borderRadius: BORDER_RADIUS.round,
+      backgroundColor: colors.border,
+      overflow: 'hidden',
+    },
+    fill: {
+      height: '100%',
+      borderRadius: BORDER_RADIUS.round,
+      backgroundColor: colors.primary,
+    },
+    fillWarning: {
+      backgroundColor: colors.danger,
+    },
+  });
+}

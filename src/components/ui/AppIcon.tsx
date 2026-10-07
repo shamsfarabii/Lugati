@@ -1,6 +1,6 @@
 import { SymbolView, type SymbolViewProps, type SymbolWeight } from 'expo-symbols';
 
-import { COLORS } from '@/constants/theme';
+import { useTheme } from '@/theme/useTheme';
 
 export type AppIconName =
   | 'chevronLeft'
@@ -28,7 +28,10 @@ export type AppIconName =
   | 'pencil'
   | 'quote'
   | 'notes'
-  | 'calendar';
+  | 'calendar'
+  | 'sun'
+  | 'moon'
+  | 'circleLefthalfFilled';
 
 const ICON_NAMES: Record<AppIconName, SymbolViewProps['name']> = {
   chevronLeft: {
@@ -161,6 +164,21 @@ const ICON_NAMES: Record<AppIconName, SymbolViewProps['name']> = {
     android: 'calendar_today',
     web: 'calendar_today',
   },
+  sun: {
+    ios: 'sun.max.fill',
+    android: 'light_mode',
+    web: 'light_mode',
+  },
+  moon: {
+    ios: 'moon.fill',
+    android: 'dark_mode',
+    web: 'dark_mode',
+  },
+  circleLefthalfFilled: {
+    ios: 'circle.lefthalf.filled',
+    android: 'contrast',
+    web: 'contrast',
+  },
 };
 
 type AppIconProps = {
@@ -173,15 +191,17 @@ type AppIconProps = {
 export function AppIcon({
   name,
   size = 20,
-  color = COLORS.text,
+  color,
   weight = 'semibold',
 }: AppIconProps) {
+  const { colors } = useTheme();
+
   return (
     <SymbolView
       name={ICON_NAMES[name]}
       size={size}
       weight={weight}
-      tintColor={color}
+      tintColor={color ?? colors.text}
       resizeMode="scaleAspectFit"
     />
   );

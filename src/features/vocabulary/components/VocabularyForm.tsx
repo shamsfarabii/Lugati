@@ -17,15 +17,9 @@ import { FormSection } from '@/components/ui/FormSection';
 import { IconButton } from '@/components/ui/IconButton';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { TextField } from '@/components/ui/TextField';
-import {
-  BORDER_RADIUS,
-  COLORS,
-  FONT_SIZES,
-  FONT_WEIGHTS,
-  ICON_SIZES,
-  SIZES,
-  SPACING,
-} from '@/constants/theme';
+import { type ThemeColors, BORDER_RADIUS, FONT_SIZES, FONT_WEIGHTS, ICON_SIZES, SIZES, SPACING } from '@/constants/theme';
+import { useThemedStyles } from '@/theme/useThemedStyles';
+import { useTheme } from '@/theme/useTheme';
 import {
   MAX_VOCABULARY_DESCRIPTION_LENGTH,
   MAX_VOCABULARY_EXAMPLE_LENGTH,
@@ -58,8 +52,6 @@ const emptyDefaults: VocabularyFormValues = {
   imageUri: '',
 };
 
-const formCardShadow = createShadow(2, COLORS.accent, 0.05, 3);
-
 function countFieldErrors(node: unknown): number {
   if (!node || typeof node !== 'object') {
     return 0;
@@ -82,6 +74,9 @@ export function VocabularyForm({
   onDelete,
   onDirtyChange,
 }: VocabularyFormProps) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
+
   const {
     control,
     handleSubmit,
@@ -218,7 +213,7 @@ export function VocabularyForm({
           style={[commonStyles.row, styles.errorSummary]}
           accessibilityLiveRegion="polite"
         >
-          <AppIcon name="warning" size={ICON_SIZES.md} color={COLORS.danger} />
+          <AppIcon name="warning" size={ICON_SIZES.md} color={colors.danger} />
           <View style={commonStyles.grow}>
             <Text style={styles.errorSummaryTitle}>Almost there</Text>
             <Text style={styles.errorSummaryBody}>
@@ -361,7 +356,7 @@ export function VocabularyForm({
             <AppIcon
               name="plus"
               size={ICON_SIZES.md}
-              color={COLORS.primary}
+              color={colors.primary}
               weight="semibold"
             />
             <Text style={styles.addExampleLabel}>
@@ -445,7 +440,7 @@ export function VocabularyForm({
                 <AppIcon
                   name="photo"
                   size={ICON_SIZES.xxl}
-                  color={COLORS.primary}
+                  color={colors.primary}
                   weight="medium"
                 />
               </View>
@@ -471,7 +466,7 @@ export function VocabularyForm({
             variant="danger"
             disabled={isSubmitting}
             leading={
-              <AppIcon name="trash" size={ICON_SIZES.md} color={COLORS.danger} />
+              <AppIcon name="trash" size={ICON_SIZES.md} color={colors.danger} />
             }
           />
         ) : null}
@@ -480,196 +475,199 @@ export function VocabularyForm({
   );
 }
 
-const styles = StyleSheet.create({
-  form: {
-    gap: SPACING.xl,
-  },
-  previewCard: {
-    paddingHorizontal: SPACING.lg,
-    paddingTop: SPACING.md,
-    paddingBottom: SPACING.lg,
-    borderRadius: BORDER_RADIUS.hero,
-    backgroundColor: COLORS.primaryDark,
-    gap: SPACING.xs,
-  },
-  previewLabel: {
-    fontSize: FONT_SIZES.xs,
-    fontWeight: FONT_WEIGHTS.semibold,
-    color: COLORS.textOnDarkCardMuted,
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-  },
-  previewArabic: {
-    fontSize: FONT_SIZES.hero,
-    fontWeight: FONT_WEIGHTS.bold,
-    color: COLORS.textOnPrimary,
-    textAlign: 'right',
-    writingDirection: 'rtl',
-    lineHeight: 42,
-  },
-  previewMeaning: {
-    fontSize: FONT_SIZES.lg,
-    color: COLORS.textOnDarkCard,
-  },
-  previewPlaceholder: {
-    opacity: 0.45,
-  },
-  errorSummary: {
-    gap: SPACING.sm,
-    padding: SPACING.md,
-    borderRadius: BORDER_RADIUS.lg,
-    borderWidth: 1,
-    borderColor: COLORS.borderDanger,
-    backgroundColor: COLORS.surfaceDanger,
-  },
-  errorSummaryTitle: {
-    fontSize: FONT_SIZES.lg,
-    fontWeight: FONT_WEIGHTS.bold,
-    color: COLORS.danger,
-  },
-  errorSummaryBody: {
-    marginTop: 2,
-    fontSize: FONT_SIZES.sm,
-    color: COLORS.text,
-  },
-  sectionCard: {
-    borderRadius: BORDER_RADIUS.xxl,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    backgroundColor: COLORS.card,
-    paddingHorizontal: SPACING.md,
-    paddingTop: SPACING.md,
-    ...formCardShadow,
-  },
-  arabicInput: {
-    fontSize: FONT_SIZES.display,
-    fontWeight: FONT_WEIGHTS.semibold,
-    writingDirection: 'rtl',
-  },
-  multilineInput: {
-    minHeight: 88,
-    textAlignVertical: 'top',
-    paddingTop: SPACING.sm + 2,
-  },
-  arabicMultilineInput: {
-    fontSize: FONT_SIZES.xxl,
-    lineHeight: 28,
-    writingDirection: 'rtl',
-  },
-  exampleHeader: {
-    gap: SPACING.sm,
-    marginBottom: SPACING.md,
-  },
-  exampleBadge: {
-    width: SIZES.stepBadge,
-    height: SIZES.stepBadge,
-    borderRadius: BORDER_RADIUS.round,
-    backgroundColor: COLORS.surfaceMuted,
-  },
-  exampleBadgeText: {
-    fontSize: FONT_SIZES.xs,
-    fontWeight: FONT_WEIGHTS.bold,
-    color: COLORS.primary,
-  },
-  exampleTitle: {
-    fontSize: FONT_SIZES.lg,
-    fontWeight: FONT_WEIGHTS.semibold,
-    color: COLORS.text,
-  },
-  addExample: {
-    gap: SPACING.sm,
-    minHeight: SIZES.primaryButtonHeight,
-    borderRadius: BORDER_RADIUS.lg,
-    borderWidth: 1,
-    borderStyle: 'dashed',
-    borderColor: COLORS.addButtonBorder,
-    backgroundColor: COLORS.surfaceAddButton,
-  },
-  addExamplePressed: {
-    backgroundColor: COLORS.surfaceAddButtonPressed,
-  },
-  addExampleLabel: {
-    fontSize: FONT_SIZES.xl,
-    fontWeight: FONT_WEIGHTS.semibold,
-    color: COLORS.primary,
-  },
-  maxExamplesNote: {
-    paddingHorizontal: SPACING.xs,
-    fontSize: FONT_SIZES.sm,
-    color: COLORS.textMutedSecondary,
-  },
-  imagePicker: {
-    borderRadius: BORDER_RADIUS.xxl,
-    overflow: 'hidden',
-    borderWidth: 1,
-    borderStyle: 'dashed',
-    borderColor: COLORS.addButtonBorder,
-    backgroundColor: COLORS.surfaceAddButton,
-  },
-  imagePickerPressed: {
-    backgroundColor: COLORS.surfaceAddButtonPressed,
-  },
-  imagePickerPlaceholder: {
-    minHeight: 168,
-    paddingHorizontal: SPACING.lg,
-    paddingVertical: SPACING.lg,
-    gap: SPACING.xs,
-  },
-  imageIconWrap: {
-    width: 52,
-    height: 52,
-    borderRadius: BORDER_RADIUS.lg,
-    backgroundColor: COLORS.surfaceMuted,
-    marginBottom: SPACING.xs,
-  },
-  imagePickerTitle: {
-    fontSize: FONT_SIZES.xl,
-    fontWeight: FONT_WEIGHTS.bold,
-    color: COLORS.primary,
-  },
-  imagePickerSubtitle: {
-    fontSize: FONT_SIZES.sm,
-    color: COLORS.textMuted,
-    textAlign: 'center',
-  },
-  imageCard: {
-    borderRadius: BORDER_RADIUS.xxl,
-    overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    backgroundColor: COLORS.card,
-    ...formCardShadow,
-  },
-  previewImage: {
-    width: '100%',
-    height: SIZES.imagePreviewHeight,
-  },
-  removeImageButton: {
-    position: 'absolute',
-    top: SPACING.sm,
-    right: SPACING.sm,
-  },
-  changePhotoBadge: {
-    position: 'absolute',
-    bottom: SPACING.md,
-    alignSelf: 'center',
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm,
-    borderRadius: BORDER_RADIUS.round,
-    backgroundColor: COLORS.card,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-  },
-  changePhotoBadgePressed: {
-    backgroundColor: COLORS.surfacePressed,
-  },
-  changePhotoText: {
-    fontSize: FONT_SIZES.sm,
-    fontWeight: FONT_WEIGHTS.semibold,
-    color: COLORS.primary,
-  },
-  actions: {
-    gap: SPACING.sm + 2,
-    paddingTop: SPACING.xs,
-  },
-});
+function createStyles(colors: ThemeColors) {
+  const formCardShadow = createShadow(2, colors.shadow, 0.05, 3);
+  return StyleSheet.create({
+    form: {
+      gap: SPACING.xl,
+    },
+    previewCard: {
+      paddingHorizontal: SPACING.lg,
+      paddingTop: SPACING.md,
+      paddingBottom: SPACING.lg,
+      borderRadius: BORDER_RADIUS.hero,
+      backgroundColor: colors.primaryDark,
+      gap: SPACING.xs,
+    },
+    previewLabel: {
+      fontSize: FONT_SIZES.xs,
+      fontWeight: FONT_WEIGHTS.semibold,
+      color: colors.textOnDarkCardMuted,
+      textTransform: 'uppercase',
+      letterSpacing: 1,
+    },
+    previewArabic: {
+      fontSize: FONT_SIZES.hero,
+      fontWeight: FONT_WEIGHTS.bold,
+      color: colors.textOnPrimary,
+      textAlign: 'right',
+      writingDirection: 'rtl',
+      lineHeight: 42,
+    },
+    previewMeaning: {
+      fontSize: FONT_SIZES.lg,
+      color: colors.textOnDarkCard,
+    },
+    previewPlaceholder: {
+      opacity: 0.45,
+    },
+    errorSummary: {
+      gap: SPACING.sm,
+      padding: SPACING.md,
+      borderRadius: BORDER_RADIUS.lg,
+      borderWidth: 1,
+      borderColor: colors.borderDanger,
+      backgroundColor: colors.surfaceDanger,
+    },
+    errorSummaryTitle: {
+      fontSize: FONT_SIZES.lg,
+      fontWeight: FONT_WEIGHTS.bold,
+      color: colors.danger,
+    },
+    errorSummaryBody: {
+      marginTop: 2,
+      fontSize: FONT_SIZES.sm,
+      color: colors.text,
+    },
+    sectionCard: {
+      borderRadius: BORDER_RADIUS.xxl,
+      borderWidth: 1,
+      borderColor: colors.border,
+      backgroundColor: colors.card,
+      paddingHorizontal: SPACING.md,
+      paddingTop: SPACING.md,
+      ...formCardShadow,
+    },
+    arabicInput: {
+      fontSize: FONT_SIZES.display,
+      fontWeight: FONT_WEIGHTS.semibold,
+      writingDirection: 'rtl',
+    },
+    multilineInput: {
+      minHeight: 88,
+      textAlignVertical: 'top',
+      paddingTop: SPACING.sm + 2,
+    },
+    arabicMultilineInput: {
+      fontSize: FONT_SIZES.xxl,
+      lineHeight: 28,
+      writingDirection: 'rtl',
+    },
+    exampleHeader: {
+      gap: SPACING.sm,
+      marginBottom: SPACING.md,
+    },
+    exampleBadge: {
+      width: SIZES.stepBadge,
+      height: SIZES.stepBadge,
+      borderRadius: BORDER_RADIUS.round,
+      backgroundColor: colors.surfaceMuted,
+    },
+    exampleBadgeText: {
+      fontSize: FONT_SIZES.xs,
+      fontWeight: FONT_WEIGHTS.bold,
+      color: colors.primary,
+    },
+    exampleTitle: {
+      fontSize: FONT_SIZES.lg,
+      fontWeight: FONT_WEIGHTS.semibold,
+      color: colors.text,
+    },
+    addExample: {
+      gap: SPACING.sm,
+      minHeight: SIZES.primaryButtonHeight,
+      borderRadius: BORDER_RADIUS.lg,
+      borderWidth: 1,
+      borderStyle: 'dashed',
+      borderColor: colors.addButtonBorder,
+      backgroundColor: colors.surfaceAddButton,
+    },
+    addExamplePressed: {
+      backgroundColor: colors.surfaceAddButtonPressed,
+    },
+    addExampleLabel: {
+      fontSize: FONT_SIZES.xl,
+      fontWeight: FONT_WEIGHTS.semibold,
+      color: colors.primary,
+    },
+    maxExamplesNote: {
+      paddingHorizontal: SPACING.xs,
+      fontSize: FONT_SIZES.sm,
+      color: colors.textMutedSecondary,
+    },
+    imagePicker: {
+      borderRadius: BORDER_RADIUS.xxl,
+      overflow: 'hidden',
+      borderWidth: 1,
+      borderStyle: 'dashed',
+      borderColor: colors.addButtonBorder,
+      backgroundColor: colors.surfaceAddButton,
+    },
+    imagePickerPressed: {
+      backgroundColor: colors.surfaceAddButtonPressed,
+    },
+    imagePickerPlaceholder: {
+      minHeight: 168,
+      paddingHorizontal: SPACING.lg,
+      paddingVertical: SPACING.lg,
+      gap: SPACING.xs,
+    },
+    imageIconWrap: {
+      width: 52,
+      height: 52,
+      borderRadius: BORDER_RADIUS.lg,
+      backgroundColor: colors.surfaceMuted,
+      marginBottom: SPACING.xs,
+    },
+    imagePickerTitle: {
+      fontSize: FONT_SIZES.xl,
+      fontWeight: FONT_WEIGHTS.bold,
+      color: colors.primary,
+    },
+    imagePickerSubtitle: {
+      fontSize: FONT_SIZES.sm,
+      color: colors.textMuted,
+      textAlign: 'center',
+    },
+    imageCard: {
+      borderRadius: BORDER_RADIUS.xxl,
+      overflow: 'hidden',
+      borderWidth: 1,
+      borderColor: colors.border,
+      backgroundColor: colors.card,
+      ...formCardShadow,
+    },
+    previewImage: {
+      width: '100%',
+      height: SIZES.imagePreviewHeight,
+    },
+    removeImageButton: {
+      position: 'absolute',
+      top: SPACING.sm,
+      right: SPACING.sm,
+    },
+    changePhotoBadge: {
+      position: 'absolute',
+      bottom: SPACING.md,
+      alignSelf: 'center',
+      paddingHorizontal: SPACING.md,
+      paddingVertical: SPACING.sm,
+      borderRadius: BORDER_RADIUS.round,
+      backgroundColor: colors.card,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    changePhotoBadgePressed: {
+      backgroundColor: colors.surfacePressed,
+    },
+    changePhotoText: {
+      fontSize: FONT_SIZES.sm,
+      fontWeight: FONT_WEIGHTS.semibold,
+      color: colors.primary,
+    },
+    actions: {
+      gap: SPACING.sm + 2,
+      paddingTop: SPACING.xs,
+    },
+  });
+}

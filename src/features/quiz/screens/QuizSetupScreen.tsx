@@ -6,13 +6,9 @@ import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { ScreenScaffold } from '@/components/ui/ScreenScaffold';
 import { TextField } from '@/components/ui/TextField';
-import {
-  BORDER_RADIUS,
-  COLORS,
-  FONT_SIZES,
-  FONT_WEIGHTS,
-  SPACING,
-} from '@/constants/theme';
+import { type ThemeColors, BORDER_RADIUS, FONT_SIZES, FONT_WEIGHTS, SPACING } from '@/constants/theme';
+import { useThemedStyles } from '@/theme/useThemedStyles';
+import { useTheme } from '@/theme/useTheme';
 import { MIN_QUIZ_VOCABULARY_COUNT } from '@/features/quiz/constants';
 import { parseQuestionCount } from '@/features/quiz/schemas/quizSchema';
 import { toErrorMessage } from '@/features/quiz/services/quizErrors';
@@ -23,6 +19,9 @@ const DEFAULT_QUESTION_COUNT = 10;
 const PRESET_QUESTION_COUNTS = [5, 10, 20];
 
 export function QuizSetupScreen() {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
+
   const [availableCount, setAvailableCount] = useState(0);
   const [totalVocabulary, setTotalVocabulary] = useState(0);
   const [canStart, setCanStart] = useState(false);
@@ -87,7 +86,7 @@ export function QuizSetupScreen() {
 
       {isLoading ? (
         <View style={[commonStyles.grow, commonStyles.centered]}>
-          <ActivityIndicator color={COLORS.primary} />
+          <ActivityIndicator color={colors.primary} />
         </View>
       ) : null}
 
@@ -197,84 +196,86 @@ export function QuizSetupScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  availabilityCard: {
-    padding: SPACING.lg,
-    borderRadius: BORDER_RADIUS.card,
-    backgroundColor: COLORS.primaryDark,
-    marginBottom: SPACING.lg,
-  },
-  availabilityValue: {
-    fontSize: FONT_SIZES.stat,
-    lineHeight: 46,
-    fontWeight: FONT_WEIGHTS.extraBold,
-    color: COLORS.textOnPrimary,
-  },
-  availabilityLabel: {
-    fontSize: FONT_SIZES.md,
-    color: COLORS.textOnDarkCard,
-  },
-  hint: {
-    marginTop: -SPACING.sm,
-    marginBottom: SPACING.md,
-    fontSize: FONT_SIZES.sm,
-    color: COLORS.textMuted,
-  },
-  presets: {
-    gap: SPACING.sm,
-    flexWrap: 'wrap',
-  },
-  preset: {
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm,
-    borderRadius: BORDER_RADIUS.round,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    backgroundColor: COLORS.card,
-  },
-  presetSelected: {
-    borderColor: COLORS.primary,
-    backgroundColor: COLORS.surfaceMuted,
-  },
-  presetPressed: {
-    backgroundColor: COLORS.surfacePressed,
-  },
-  presetLabel: {
-    fontSize: FONT_SIZES.md,
-    fontWeight: FONT_WEIGHTS.semibold,
-    color: COLORS.textMuted,
-  },
-  presetLabelSelected: {
-    color: COLORS.primary,
-  },
-  footnote: {
-    marginTop: SPACING.md,
-    fontSize: FONT_SIZES.sm,
-    color: COLORS.textMuted,
-  },
-  state: {
-    paddingHorizontal: SPACING.lg,
-  },
-  stateTitle: {
-    fontSize: FONT_SIZES.xxl,
-    fontWeight: FONT_WEIGHTS.bold,
-    color: COLORS.text,
-    marginBottom: SPACING.xs,
-    textAlign: 'center',
-  },
-  stateBody: {
-    fontSize: FONT_SIZES.md,
-    color: COLORS.textMuted,
-    textAlign: 'center',
-    marginBottom: SPACING.md,
-  },
-  stateButton: {
-    alignSelf: 'stretch',
-    marginTop: SPACING.sm,
-  },
-  retryLink: {
-    fontSize: FONT_SIZES.md,
-    fontWeight: FONT_WEIGHTS.semibold,
-    color: COLORS.primary,
-  },
-});
+function createStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    availabilityCard: {
+      padding: SPACING.lg,
+      borderRadius: BORDER_RADIUS.card,
+      backgroundColor: colors.primaryDark,
+      marginBottom: SPACING.lg,
+    },
+    availabilityValue: {
+      fontSize: FONT_SIZES.stat,
+      lineHeight: 46,
+      fontWeight: FONT_WEIGHTS.extraBold,
+      color: colors.textOnPrimary,
+    },
+    availabilityLabel: {
+      fontSize: FONT_SIZES.md,
+      color: colors.textOnDarkCard,
+    },
+    hint: {
+      marginTop: -SPACING.sm,
+      marginBottom: SPACING.md,
+      fontSize: FONT_SIZES.sm,
+      color: colors.textMuted,
+    },
+    presets: {
+      gap: SPACING.sm,
+      flexWrap: 'wrap',
+    },
+    preset: {
+      paddingHorizontal: SPACING.md,
+      paddingVertical: SPACING.sm,
+      borderRadius: BORDER_RADIUS.round,
+      borderWidth: 1,
+      borderColor: colors.border,
+      backgroundColor: colors.card,
+    },
+    presetSelected: {
+      borderColor: colors.primary,
+      backgroundColor: colors.surfaceMuted,
+    },
+    presetPressed: {
+      backgroundColor: colors.surfacePressed,
+    },
+    presetLabel: {
+      fontSize: FONT_SIZES.md,
+      fontWeight: FONT_WEIGHTS.semibold,
+      color: colors.textMuted,
+    },
+    presetLabelSelected: {
+      color: colors.primary,
+    },
+    footnote: {
+      marginTop: SPACING.md,
+      fontSize: FONT_SIZES.sm,
+      color: colors.textMuted,
+    },
+    state: {
+      paddingHorizontal: SPACING.lg,
+    },
+    stateTitle: {
+      fontSize: FONT_SIZES.xxl,
+      fontWeight: FONT_WEIGHTS.bold,
+      color: colors.text,
+      marginBottom: SPACING.xs,
+      textAlign: 'center',
+    },
+    stateBody: {
+      fontSize: FONT_SIZES.md,
+      color: colors.textMuted,
+      textAlign: 'center',
+      marginBottom: SPACING.md,
+    },
+    stateButton: {
+      alignSelf: 'stretch',
+      marginTop: SPACING.sm,
+    },
+    retryLink: {
+      fontSize: FONT_SIZES.md,
+      fontWeight: FONT_WEIGHTS.semibold,
+      color: colors.primary,
+    },
+  });
+}

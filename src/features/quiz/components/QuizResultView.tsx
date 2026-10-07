@@ -1,13 +1,8 @@
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
-import {
-  BORDER_RADIUS,
-  COLORS,
-  FONT_SIZES,
-  FONT_WEIGHTS,
-  SPACING,
-} from '@/constants/theme';
+import { type ThemeColors, BORDER_RADIUS, FONT_SIZES, FONT_WEIGHTS, SPACING } from '@/constants/theme';
+import { useThemedStyles } from '@/theme/useThemedStyles';
 import type { QuizAnswerRecord, QuizResult } from '@/features/quiz/types/quiz.types';
 import { createShadow } from '@/helpers/styleHelpers';
 import { commonStyles } from '@/styles/commonStyles';
@@ -31,12 +26,14 @@ export function QuizResultView({
   onAttemptAnother,
   onBackToVocabulary,
 }: QuizResultViewProps) {
+  const styles = useThemedStyles(createStyles);
+
   const { attempt, answers, accuracyPercent } = result;
 
   return (
     <View style={commonStyles.grow}>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
-        <View style={[styles.scoreCard, commonStyles.centered, cardShadow]}>
+        <View style={[styles.scoreCard, commonStyles.centered]}>
           <Text style={styles.scoreLabel}>Score</Text>
           <Text style={styles.scoreValue}>
             {attempt.correctAnswers} / {attempt.totalQuestions}
@@ -98,106 +95,108 @@ export function QuizResultView({
   );
 }
 
-const cardShadow = createShadow(2, COLORS.accent, 0.06, 4);
-
-const styles = StyleSheet.create({
-  content: {
-    paddingBottom: SPACING.lg,
-  },
-  scoreCard: {
-    padding: SPACING.xl,
-    borderRadius: BORDER_RADIUS.card,
-    backgroundColor: COLORS.card,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    marginBottom: SPACING.lg,
-  },
-  scoreLabel: {
-    fontSize: FONT_SIZES.md,
-    color: COLORS.textMuted,
-  },
-  scoreValue: {
-    marginTop: SPACING.xs,
-    fontSize: FONT_SIZES.stat,
-    lineHeight: 50,
-    fontWeight: FONT_WEIGHTS.extraBold,
-    color: COLORS.primaryLight,
-  },
-  statsRow: {
-    alignSelf: 'stretch',
-    marginTop: SPACING.md,
-    paddingTop: SPACING.md,
-    borderTopWidth: 1,
-    borderTopColor: COLORS.borderLight,
-  },
-  stat: {
-    flex: 1,
-    gap: 2,
-  },
-  statValue: {
-    fontSize: FONT_SIZES.xxxl,
-    fontWeight: FONT_WEIGHTS.bold,
-    color: COLORS.text,
-  },
-  statLabel: {
-    fontSize: FONT_SIZES.sm,
-    color: COLORS.textMuted,
-  },
-  sectionTitle: {
-    fontSize: FONT_SIZES.xxl,
-    fontWeight: FONT_WEIGHTS.bold,
-    color: COLORS.text,
-    marginBottom: SPACING.sm,
-  },
-  answerList: {
-    borderRadius: BORDER_RADIUS.xxl,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    backgroundColor: COLORS.card,
-    overflow: 'hidden',
-  },
-  answerRow: {
-    padding: SPACING.md,
-    gap: 2,
-  },
-  answerRowBorder: {
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.borderLight,
-  },
-  answerIndex: {
-    fontSize: FONT_SIZES.md,
-    fontWeight: FONT_WEIGHTS.semibold,
-    color: COLORS.textMuted,
-  },
-  answerWord: {
-    fontSize: FONT_SIZES.display,
-    fontWeight: FONT_WEIGHTS.semibold,
-    color: COLORS.arabicWord,
-  },
-  answerLine: {
-    marginTop: SPACING.xs,
-    fontSize: FONT_SIZES.md,
-    color: COLORS.textMuted,
-  },
-  answerValue: {
-    fontWeight: FONT_WEIGHTS.semibold,
-    color: COLORS.text,
-  },
-  verdict: {
-    marginTop: SPACING.sm,
-    fontSize: FONT_SIZES.md,
-    fontWeight: FONT_WEIGHTS.bold,
-  },
-  verdictCorrect: {
-    color: COLORS.primary,
-  },
-  verdictWrong: {
-    color: COLORS.danger,
-  },
-  actions: {
-    gap: SPACING.sm,
-    paddingTop: SPACING.md,
-    borderTopWidth: 1,
-    borderTopColor: COLORS.borderLight,
-  },
-});
+function createStyles(colors: ThemeColors) {
+  const cardShadow = createShadow(2, colors.shadow, 0.06, 4);
+  return StyleSheet.create({
+    content: {
+      paddingBottom: SPACING.lg,
+    },
+    scoreCard: {
+      padding: SPACING.xl,
+      borderRadius: BORDER_RADIUS.card,
+      backgroundColor: colors.card,
+      borderWidth: 1,
+      borderColor: colors.border,
+      marginBottom: SPACING.lg,
+      ...cardShadow,
+    },
+    scoreLabel: {
+      fontSize: FONT_SIZES.md,
+      color: colors.textMuted,
+    },
+    scoreValue: {
+      marginTop: SPACING.xs,
+      fontSize: FONT_SIZES.stat,
+      lineHeight: 50,
+      fontWeight: FONT_WEIGHTS.extraBold,
+      color: colors.primaryLight,
+    },
+    statsRow: {
+      alignSelf: 'stretch',
+      marginTop: SPACING.md,
+      paddingTop: SPACING.md,
+      borderTopWidth: 1,
+      borderTopColor: colors.borderLight,
+    },
+    stat: {
+      flex: 1,
+      gap: 2,
+    },
+    statValue: {
+      fontSize: FONT_SIZES.xxxl,
+      fontWeight: FONT_WEIGHTS.bold,
+      color: colors.text,
+    },
+    statLabel: {
+      fontSize: FONT_SIZES.sm,
+      color: colors.textMuted,
+    },
+    sectionTitle: {
+      fontSize: FONT_SIZES.xxl,
+      fontWeight: FONT_WEIGHTS.bold,
+      color: colors.text,
+      marginBottom: SPACING.sm,
+    },
+    answerList: {
+      borderRadius: BORDER_RADIUS.xxl,
+      borderWidth: 1,
+      borderColor: colors.border,
+      backgroundColor: colors.card,
+      overflow: 'hidden',
+    },
+    answerRow: {
+      padding: SPACING.md,
+      gap: 2,
+    },
+    answerRowBorder: {
+      borderBottomWidth: 1,
+      borderBottomColor: colors.borderLight,
+    },
+    answerIndex: {
+      fontSize: FONT_SIZES.md,
+      fontWeight: FONT_WEIGHTS.semibold,
+      color: colors.textMuted,
+    },
+    answerWord: {
+      fontSize: FONT_SIZES.display,
+      fontWeight: FONT_WEIGHTS.semibold,
+      color: colors.arabicWord,
+    },
+    answerLine: {
+      marginTop: SPACING.xs,
+      fontSize: FONT_SIZES.md,
+      color: colors.textMuted,
+    },
+    answerValue: {
+      fontWeight: FONT_WEIGHTS.semibold,
+      color: colors.text,
+    },
+    verdict: {
+      marginTop: SPACING.sm,
+      fontSize: FONT_SIZES.md,
+      fontWeight: FONT_WEIGHTS.bold,
+    },
+    verdictCorrect: {
+      color: colors.primary,
+    },
+    verdictWrong: {
+      color: colors.danger,
+    },
+    actions: {
+      gap: SPACING.sm,
+      paddingTop: SPACING.md,
+      borderTopWidth: 1,
+      borderTopColor: colors.borderLight,
+    },
+  });
+}

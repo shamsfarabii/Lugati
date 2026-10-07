@@ -3,15 +3,9 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { HOME_MAX_FONT_SCALE } from '@/components/home/homeLayout';
 import { AppIcon, type AppIconName } from '@/components/ui/AppIcon';
-import {
-  BORDER_RADIUS,
-  COLORS,
-  FONT_SIZES,
-  FONT_WEIGHTS,
-  ICON_SIZES,
-  SIZES,
-  SPACING,
-} from '@/constants/theme';
+import { type ThemeColors, BORDER_RADIUS, FONT_SIZES, FONT_WEIGHTS, ICON_SIZES, SIZES, SPACING } from '@/constants/theme';
+import { useThemedStyles } from '@/theme/useThemedStyles';
+import { useTheme } from '@/theme/useTheme';
 import { createShadow } from '@/helpers/styleHelpers';
 import { commonStyles } from '@/styles/commonStyles';
 
@@ -33,13 +27,6 @@ type ActionCardProps = {
   progressPercent?: number | null;
 };
 
-const cardShadow = createShadow(2, COLORS.accent, 0.06, 10, { width: 0, height: 4 });
-
-const BUTTON_ICON_COLOR: Record<ActionCardVariant, string> = {
-  primary: COLORS.textOnPrimary,
-  secondary: COLORS.primary,
-};
-
 export function ActionCard({
   icon,
   title,
@@ -51,6 +38,9 @@ export function ActionCard({
   disabled = false,
   progressPercent = null,
 }: ActionCardProps) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
+
   const isPrimary = variant === 'primary';
 
   return (
@@ -62,11 +52,11 @@ export function ActionCard({
               source={icon.source}
               style={styles.imageIcon}
               contentFit="contain"
-              tintColor={COLORS.primary}
+              tintColor={colors.primary}
               accessible={false}
             />
           ) : (
-            <AppIcon name={icon.name} size={ICON_SIZES.xl} color={COLORS.primary} />
+            <AppIcon name={icon.name} size={ICON_SIZES.xl} color={colors.primary} />
           )}
         </View>
 
@@ -118,7 +108,7 @@ export function ActionCard({
         <AppIcon
           name="arrowRight"
           size={ICON_SIZES.md}
-          color={BUTTON_ICON_COLOR[variant]}
+          color={variant === 'primary' ? colors.textOnPrimary : colors.primary}
           weight="bold"
         />
       </Pressable>
@@ -126,89 +116,92 @@ export function ActionCard({
   );
 }
 
-const styles = StyleSheet.create({
-  actionCard: {
-    gap: SPACING.lg,
-    padding: SPACING.lg,
-    borderRadius: BORDER_RADIUS.card,
-    backgroundColor: COLORS.card,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    ...cardShadow,
-  },
-  actionCardWide: {
-    flex: 1,
-    justifyContent: 'space-between',
-    minWidth: 0,
-  },
-  actionIcon: {
-    width: SIZES.practiceIcon,
-    height: SIZES.practiceIcon,
-    borderRadius: BORDER_RADIUS.md,
-    backgroundColor: COLORS.surfaceMuted,
-  },
-  imageIcon: {
-    width: ICON_SIZES.xl,
-    height: ICON_SIZES.xl,
-  },
-  actionContent: {
-    marginLeft: SPACING.md - 2,
-    minWidth: 0,
-  },
-  actionTitle: {
-    fontSize: FONT_SIZES.xxl,
-    fontWeight: FONT_WEIGHTS.bold,
-    color: COLORS.text,
-  },
-  actionDescription: {
-    marginTop: 3,
-    fontSize: FONT_SIZES.md,
-    color: COLORS.textMuted,
-  },
-  progressTrack: {
-    height: SIZES.quizTimerTrackHeight,
-    borderRadius: BORDER_RADIUS.round,
-    backgroundColor: COLORS.surfaceMuted,
-    overflow: 'hidden',
-  },
-  progressFill: {
-    height: '100%',
-    borderRadius: BORDER_RADIUS.round,
-    backgroundColor: COLORS.primary,
-  },
-  primaryButton: {
-    minHeight: SIZES.primaryButtonHeight,
-    paddingHorizontal: SPACING.md,
-    borderRadius: BORDER_RADIUS.lg,
-    backgroundColor: COLORS.primary,
-    gap: SPACING.sm,
-  },
-  secondaryButton: {
-    minHeight: SIZES.primaryButtonHeight,
-    paddingHorizontal: SPACING.md,
-    borderRadius: BORDER_RADIUS.lg,
-    backgroundColor: COLORS.surfaceMuted,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    gap: SPACING.sm,
-  },
-  buttonPressed: {
-    opacity: 0.85,
-    transform: [{ scale: 0.99 }],
-  },
-  buttonDisabled: {
-    opacity: 0.5,
-  },
-  primaryButtonText: {
-    flexShrink: 1,
-    fontSize: FONT_SIZES.xl,
-    fontWeight: FONT_WEIGHTS.bold,
-    color: COLORS.textOnPrimary,
-  },
-  secondaryButtonText: {
-    flexShrink: 1,
-    fontSize: FONT_SIZES.xl,
-    fontWeight: FONT_WEIGHTS.bold,
-    color: COLORS.primary,
-  },
-});
+function createStyles(colors: ThemeColors) {
+  const cardShadow = createShadow(2, colors.shadow, 0.06, 10, { width: 0, height: 4 });
+  return StyleSheet.create({
+    actionCard: {
+      gap: SPACING.lg,
+      padding: SPACING.lg,
+      borderRadius: BORDER_RADIUS.card,
+      backgroundColor: colors.card,
+      borderWidth: 1,
+      borderColor: colors.border,
+      ...cardShadow,
+    },
+    actionCardWide: {
+      flex: 1,
+      justifyContent: 'space-between',
+      minWidth: 0,
+    },
+    actionIcon: {
+      width: SIZES.practiceIcon,
+      height: SIZES.practiceIcon,
+      borderRadius: BORDER_RADIUS.md,
+      backgroundColor: colors.surfaceMuted,
+    },
+    imageIcon: {
+      width: ICON_SIZES.xl,
+      height: ICON_SIZES.xl,
+    },
+    actionContent: {
+      marginLeft: SPACING.md - 2,
+      minWidth: 0,
+    },
+    actionTitle: {
+      fontSize: FONT_SIZES.xxl,
+      fontWeight: FONT_WEIGHTS.bold,
+      color: colors.text,
+    },
+    actionDescription: {
+      marginTop: 3,
+      fontSize: FONT_SIZES.md,
+      color: colors.textMuted,
+    },
+    progressTrack: {
+      height: SIZES.quizTimerTrackHeight,
+      borderRadius: BORDER_RADIUS.round,
+      backgroundColor: colors.surfaceMuted,
+      overflow: 'hidden',
+    },
+    progressFill: {
+      height: '100%',
+      borderRadius: BORDER_RADIUS.round,
+      backgroundColor: colors.primary,
+    },
+    primaryButton: {
+      minHeight: SIZES.primaryButtonHeight,
+      paddingHorizontal: SPACING.md,
+      borderRadius: BORDER_RADIUS.lg,
+      backgroundColor: colors.primary,
+      gap: SPACING.sm,
+    },
+    secondaryButton: {
+      minHeight: SIZES.primaryButtonHeight,
+      paddingHorizontal: SPACING.md,
+      borderRadius: BORDER_RADIUS.lg,
+      backgroundColor: colors.surfaceMuted,
+      borderWidth: 1,
+      borderColor: colors.border,
+      gap: SPACING.sm,
+    },
+    buttonPressed: {
+      opacity: 0.85,
+      transform: [{ scale: 0.99 }],
+    },
+    buttonDisabled: {
+      opacity: 0.5,
+    },
+    primaryButtonText: {
+      flexShrink: 1,
+      fontSize: FONT_SIZES.xl,
+      fontWeight: FONT_WEIGHTS.bold,
+      color: colors.textOnPrimary,
+    },
+    secondaryButtonText: {
+      flexShrink: 1,
+      fontSize: FONT_SIZES.xl,
+      fontWeight: FONT_WEIGHTS.bold,
+      color: colors.primary,
+    },
+  });
+}

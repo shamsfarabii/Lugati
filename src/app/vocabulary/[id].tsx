@@ -6,20 +6,18 @@ import { AppIcon } from '@/components/ui/AppIcon';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { ScreenScaffold } from '@/components/ui/ScreenScaffold';
-import {
-  BORDER_RADIUS,
-  COLORS,
-  FONT_SIZES,
-  FONT_WEIGHTS,
-  ICON_SIZES,
-  SPACING,
-} from '@/constants/theme';
+import { type ThemeColors, BORDER_RADIUS, FONT_SIZES, FONT_WEIGHTS, ICON_SIZES, SPACING } from '@/constants/theme';
+import { useThemedStyles } from '@/theme/useThemedStyles';
+import { useTheme } from '@/theme/useTheme';
 import { VocabularyDetailScreen } from '@/features/vocabulary/screens/VocabularyDetailScreen';
 import { getVocabulary } from '@/features/vocabulary/services/vocabularyService';
 import type { Vocabulary } from '@/features/vocabulary/types';
 import { commonStyles } from '@/styles/commonStyles';
 
 export default function VocabularyDetailRoute() {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
+
   const { id } = useLocalSearchParams<{ id: string }>();
   const vocabularyId = typeof id === 'string' ? id : '';
 
@@ -65,7 +63,7 @@ export default function VocabularyDetailRoute() {
       <ScreenScaffold scroll={false}>
         <ScreenHeader title="Word" onBack={() => router.back()} />
         <View style={[commonStyles.grow, commonStyles.centered]}>
-          <ActivityIndicator color={COLORS.primary} />
+          <ActivityIndicator color={colors.primary} />
         </View>
       </ScreenScaffold>
     );
@@ -77,7 +75,7 @@ export default function VocabularyDetailRoute() {
         <ScreenHeader title="Word" onBack={() => router.back()} />
         <View style={[commonStyles.grow, commonStyles.centered, styles.errorState]}>
           <View style={[styles.errorIcon, commonStyles.centered]}>
-            <AppIcon name="warning" size={ICON_SIZES.xxl} color={COLORS.danger} />
+            <AppIcon name="warning" size={ICON_SIZES.xxl} color={colors.danger} />
           </View>
           <Text style={styles.errorTitle}>Could not open this word</Text>
           <Text style={styles.errorBody}>{loadError ?? 'Vocabulary not found.'}</Text>
@@ -101,33 +99,35 @@ export default function VocabularyDetailRoute() {
   );
 }
 
-const styles = StyleSheet.create({
-  errorState: {
-    paddingHorizontal: SPACING.lg,
-    paddingBottom: SPACING.section,
-  },
-  errorIcon: {
-    width: 64,
-    height: 64,
-    marginBottom: SPACING.md,
-    borderRadius: BORDER_RADIUS.xxl,
-    backgroundColor: COLORS.surfaceDanger,
-  },
-  errorTitle: {
-    fontSize: FONT_SIZES.xxxl,
-    fontWeight: FONT_WEIGHTS.bold,
-    color: COLORS.text,
-    marginBottom: SPACING.xs + 2,
-  },
-  errorBody: {
-    maxWidth: 300,
-    fontSize: FONT_SIZES.md,
-    lineHeight: 20,
-    color: COLORS.textMuted,
-    textAlign: 'center',
-  },
-  errorButton: {
-    marginTop: SPACING.lg,
-    alignSelf: 'stretch',
-  },
-});
+function createStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    errorState: {
+      paddingHorizontal: SPACING.lg,
+      paddingBottom: SPACING.section,
+    },
+    errorIcon: {
+      width: 64,
+      height: 64,
+      marginBottom: SPACING.md,
+      borderRadius: BORDER_RADIUS.xxl,
+      backgroundColor: colors.surfaceDanger,
+    },
+    errorTitle: {
+      fontSize: FONT_SIZES.xxxl,
+      fontWeight: FONT_WEIGHTS.bold,
+      color: colors.text,
+      marginBottom: SPACING.xs + 2,
+    },
+    errorBody: {
+      maxWidth: 300,
+      fontSize: FONT_SIZES.md,
+      lineHeight: 20,
+      color: colors.textMuted,
+      textAlign: 'center',
+    },
+    errorButton: {
+      marginTop: SPACING.lg,
+      alignSelf: 'stretch',
+    },
+  });
+}

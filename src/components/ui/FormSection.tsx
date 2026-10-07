@@ -1,13 +1,8 @@
 import type { ReactNode } from 'react';
 import { StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
 
-import {
-  BORDER_RADIUS,
-  COLORS,
-  FONT_SIZES,
-  FONT_WEIGHTS,
-  SPACING,
-} from '@/constants/theme';
+import { type ThemeColors, BORDER_RADIUS, FONT_SIZES, FONT_WEIGHTS, SPACING } from '@/constants/theme';
+import { useThemedStyles } from '@/theme/useThemedStyles';
 import { commonStyles } from '@/styles/commonStyles';
 
 type FormSectionProps = {
@@ -27,6 +22,8 @@ export function FormSection({
   children,
   style,
 }: FormSectionProps) {
+  const styles = useThemedStyles(createStyles);
+
   return (
     <View style={[styles.section, style]}>
       <View style={[commonStyles.row, commonStyles.alignCenter, styles.titleRow]}>
@@ -52,44 +49,46 @@ export function FormSection({
   );
 }
 
-const styles = StyleSheet.create({
-  section: {
-    gap: SPACING.sm + 2,
-  },
-  titleRow: {
-    gap: SPACING.sm,
-    paddingHorizontal: SPACING.xs,
-  },
-  title: {
-    fontSize: FONT_SIZES.xs,
-    fontWeight: FONT_WEIGHTS.bold,
-    color: COLORS.textMuted,
-    textTransform: 'uppercase',
-    letterSpacing: 0.8,
-  },
-  badge: {
-    paddingHorizontal: SPACING.sm,
-    paddingVertical: 2,
-    borderRadius: BORDER_RADIUS.round,
-    backgroundColor: COLORS.surfaceMuted,
-  },
-  badgeRequired: {
-    backgroundColor: COLORS.surfaceDanger,
-  },
-  badgeLabel: {
-    fontSize: FONT_SIZES.xs - 1,
-    fontWeight: FONT_WEIGHTS.semibold,
-    color: COLORS.textMuted,
-    letterSpacing: 0.3,
-  },
-  badgeLabelRequired: {
-    color: COLORS.danger,
-  },
-  hint: {
-    marginTop: -SPACING.xs,
-    paddingHorizontal: SPACING.xs,
-    fontSize: FONT_SIZES.sm,
-    lineHeight: 18,
-    color: COLORS.textMutedSecondary,
-  },
-});
+function createStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    section: {
+      gap: SPACING.sm + 2,
+    },
+    titleRow: {
+      gap: SPACING.sm,
+      paddingHorizontal: SPACING.xs,
+    },
+    title: {
+      fontSize: FONT_SIZES.xs,
+      fontWeight: FONT_WEIGHTS.bold,
+      color: colors.textMuted,
+      textTransform: 'uppercase',
+      letterSpacing: 0.8,
+    },
+    badge: {
+      paddingHorizontal: SPACING.sm,
+      paddingVertical: 2,
+      borderRadius: BORDER_RADIUS.round,
+      backgroundColor: colors.surfaceMuted,
+    },
+    badgeRequired: {
+      backgroundColor: colors.surfaceDanger,
+    },
+    badgeLabel: {
+      fontSize: FONT_SIZES.xs - 1,
+      fontWeight: FONT_WEIGHTS.semibold,
+      color: colors.textMuted,
+      letterSpacing: 0.3,
+    },
+    badgeLabelRequired: {
+      color: colors.danger,
+    },
+    hint: {
+      marginTop: -SPACING.xs,
+      paddingHorizontal: SPACING.xs,
+      fontSize: FONT_SIZES.sm,
+      lineHeight: 18,
+      color: colors.textMutedSecondary,
+    },
+  });
+}

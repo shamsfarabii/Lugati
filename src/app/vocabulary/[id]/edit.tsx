@@ -5,7 +5,9 @@ import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { ScreenScaffold } from '@/components/ui/ScreenScaffold';
-import { COLORS, FONT_SIZES, FONT_WEIGHTS, SPACING } from '@/constants/theme';
+import { type ThemeColors, FONT_SIZES, FONT_WEIGHTS, SPACING } from '@/constants/theme';
+import { useThemedStyles } from '@/theme/useThemedStyles';
+import { useTheme } from '@/theme/useTheme';
 import { VocabularyForm } from '@/features/vocabulary/components/VocabularyForm';
 import {
   getVocabulary,
@@ -18,6 +20,9 @@ import { appAlert } from '@/utils/appAlert';
 import { commonStyles } from '@/styles/commonStyles';
 
 export default function EditVocabularyRoute() {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
+
   const { id } = useLocalSearchParams<{ id: string }>();
   const vocabularyId = typeof id === 'string' ? id : '';
 
@@ -117,7 +122,7 @@ export default function EditVocabularyRoute() {
 
       {isLoading ? (
         <View style={[commonStyles.centered, styles.state]}>
-          <ActivityIndicator color={COLORS.primary} />
+          <ActivityIndicator color={colors.primary} />
         </View>
       ) : null}
 
@@ -160,26 +165,28 @@ export default function EditVocabularyRoute() {
   );
 }
 
-const styles = StyleSheet.create({
-  state: {
-    minHeight: 220,
-    paddingHorizontal: SPACING.md,
-  },
-  errorTitle: {
-    fontSize: FONT_SIZES.xxl,
-    fontWeight: FONT_WEIGHTS.bold,
-    color: COLORS.text,
-    marginBottom: SPACING.xs,
-  },
-  errorBody: {
-    fontSize: FONT_SIZES.md,
-    lineHeight: 20,
-    color: COLORS.textMuted,
-    textAlign: 'center',
-  },
-  retryButton: {
-    marginTop: SPACING.md,
-    alignSelf: 'center',
-    paddingHorizontal: SPACING.xl,
-  },
-});
+function createStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    state: {
+      minHeight: 220,
+      paddingHorizontal: SPACING.md,
+    },
+    errorTitle: {
+      fontSize: FONT_SIZES.xxl,
+      fontWeight: FONT_WEIGHTS.bold,
+      color: colors.text,
+      marginBottom: SPACING.xs,
+    },
+    errorBody: {
+      fontSize: FONT_SIZES.md,
+      lineHeight: 20,
+      color: colors.textMuted,
+      textAlign: 'center',
+    },
+    retryButton: {
+      marginTop: SPACING.md,
+      alignSelf: 'center',
+      paddingHorizontal: SPACING.xl,
+    },
+  });
+}

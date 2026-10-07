@@ -2,15 +2,9 @@ import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { AppIcon } from '@/components/ui/AppIcon';
-import {
-  BORDER_RADIUS,
-  COLORS,
-  FONT_SIZES,
-  FONT_WEIGHTS,
-  ICON_SIZES,
-  SIZES,
-  SPACING,
-} from '@/constants/theme';
+import { type ThemeColors, BORDER_RADIUS, FONT_SIZES, FONT_WEIGHTS, ICON_SIZES, SIZES, SPACING } from '@/constants/theme';
+import { useThemedStyles } from '@/theme/useThemedStyles';
+import { useTheme } from '@/theme/useTheme';
 import { commonStyles } from '@/styles/commonStyles';
 
 type ScreenHeaderProps = {
@@ -26,6 +20,9 @@ export function ScreenHeader({
   onBack,
   rightAction,
 }: ScreenHeaderProps) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
+
   return (
     <View style={styles.wrapper}>
       <View style={[commonStyles.row, commonStyles.alignCenter, styles.header]}>
@@ -43,7 +40,7 @@ export function ScreenHeader({
             <AppIcon
               name="chevronLeft"
               size={ICON_SIZES.lg}
-              color={COLORS.primary}
+              color={colors.primary}
               weight="bold"
             />
           </Pressable>
@@ -65,45 +62,47 @@ export function ScreenHeader({
   );
 }
 
-const styles = StyleSheet.create({
-  wrapper: {
-    marginBottom: SPACING.lg,
-  },
-  header: {
-    marginBottom: 0,
-  },
-  iconButton: {
-    width: SIZES.headerIconButton,
-    height: SIZES.headerIconButton,
-    borderRadius: BORDER_RADIUS.sm,
-    backgroundColor: COLORS.card,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-  },
-  iconButtonPressed: {
-    backgroundColor: COLORS.surfacePressed,
-  },
-  iconPlaceholder: {
-    width: SIZES.headerIconButton,
-    height: SIZES.headerIconButton,
-  },
-  title: {
-    flex: 1,
-    textAlign: 'center',
-    fontSize: FONT_SIZES.xxl,
-    fontWeight: FONT_WEIGHTS.bold,
-    color: COLORS.text,
-  },
-  subtitle: {
-    marginTop: SPACING.sm,
-    textAlign: 'center',
-    fontSize: FONT_SIZES.md,
-    lineHeight: 20,
-    color: COLORS.textMuted,
-    paddingHorizontal: SPACING.md,
-  },
-  rightSlot: {
-    minWidth: SIZES.headerIconButton,
-    alignItems: 'flex-end',
-  },
-});
+function createStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    wrapper: {
+      marginBottom: SPACING.lg,
+    },
+    header: {
+      marginBottom: 0,
+    },
+    iconButton: {
+      width: SIZES.headerIconButton,
+      height: SIZES.headerIconButton,
+      borderRadius: BORDER_RADIUS.sm,
+      backgroundColor: colors.card,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    iconButtonPressed: {
+      backgroundColor: colors.surfacePressed,
+    },
+    iconPlaceholder: {
+      width: SIZES.headerIconButton,
+      height: SIZES.headerIconButton,
+    },
+    title: {
+      flex: 1,
+      textAlign: 'center',
+      fontSize: FONT_SIZES.xxl,
+      fontWeight: FONT_WEIGHTS.bold,
+      color: colors.text,
+    },
+    subtitle: {
+      marginTop: SPACING.sm,
+      textAlign: 'center',
+      fontSize: FONT_SIZES.md,
+      lineHeight: 20,
+      color: colors.textMuted,
+      paddingHorizontal: SPACING.md,
+    },
+    rightSlot: {
+      minWidth: SIZES.headerIconButton,
+      alignItems: 'flex-end',
+    },
+  });
+}

@@ -15,15 +15,9 @@ import { AppIcon, type AppIconName } from '@/components/ui/AppIcon';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { ScreenScaffold } from '@/components/ui/ScreenScaffold';
-import {
-  BORDER_RADIUS,
-  COLORS,
-  FONT_SIZES,
-  FONT_WEIGHTS,
-  ICON_SIZES,
-  SIZES,
-  SPACING,
-} from '@/constants/theme';
+import { type ThemeColors, BORDER_RADIUS, FONT_SIZES, FONT_WEIGHTS, ICON_SIZES, SIZES, SPACING } from '@/constants/theme';
+import { useThemedStyles } from '@/theme/useThemedStyles';
+import { useTheme } from '@/theme/useTheme';
 import { MAX_VOCABULARY_EXAMPLES } from '@/features/vocabulary/constants';
 import { toReviewErrorMessage } from '@/features/review/services/reviewErrors';
 import {
@@ -69,6 +63,9 @@ function displayAnswerText(card: ReviewCardItem): string {
 }
 
 export function ReviewSessionScreen({ sessionId }: ReviewSessionScreenProps) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
+
   const [sessionState, setSessionState] = useState<ActiveReviewSession | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -188,7 +185,7 @@ export function ReviewSessionScreen({ sessionId }: ReviewSessionScreenProps) {
   if (isLoading && !sessionState) {
     return renderShell(
       <View style={[commonStyles.grow, commonStyles.centered]}>
-        <ActivityIndicator color={COLORS.primary} />
+        <ActivityIndicator color={colors.primary} />
       </View>,
     );
   }
@@ -197,8 +194,8 @@ export function ReviewSessionScreen({ sessionId }: ReviewSessionScreenProps) {
     return renderShell(
       <StateView
         icon="warning"
-        iconColor={COLORS.danger}
-        iconBackground={COLORS.surfaceDanger}
+        iconColor={colors.danger}
+        iconBackground={colors.surfaceDanger}
         title="Could not open review"
         body={loadError}
       >
@@ -242,7 +239,7 @@ export function ReviewSessionScreen({ sessionId }: ReviewSessionScreenProps) {
               <AppIcon
                 name="arrowRight"
                 size={ICON_SIZES.md}
-                color={COLORS.textOnPrimary}
+                color={colors.textOnPrimary}
                 weight="bold"
               />
             }
@@ -348,7 +345,7 @@ export function ReviewSessionScreen({ sessionId }: ReviewSessionScreenProps) {
 
           {!isRevealed ? (
             <View style={[commonStyles.row, commonStyles.centered, styles.revealPlaceholder]}>
-              <AppIcon name="eye" size={ICON_SIZES.md} color={COLORS.primary} />
+              <AppIcon name="eye" size={ICON_SIZES.md} color={colors.primary} />
               <Text style={styles.revealHint} maxFontSizeMultiplier={MAX_FONT_SCALE}>
                 Tap to reveal the answer
               </Text>
@@ -422,7 +419,7 @@ export function ReviewSessionScreen({ sessionId }: ReviewSessionScreenProps) {
       <View style={styles.footer}>
         {submitError ? (
           <View style={[commonStyles.row, commonStyles.alignCenter, styles.footerError]}>
-            <AppIcon name="warning" size={ICON_SIZES.sm} color={COLORS.danger} />
+            <AppIcon name="warning" size={ICON_SIZES.sm} color={colors.danger} />
             <Text style={styles.footerErrorText} maxFontSizeMultiplier={MAX_FONT_SCALE}>
               {submitError}
             </Text>
@@ -433,7 +430,7 @@ export function ReviewSessionScreen({ sessionId }: ReviewSessionScreenProps) {
           <PrimaryButton
             label="Show Answer"
             onPress={handleReveal}
-            leading={<AppIcon name="eye" size={ICON_SIZES.md} color={COLORS.textOnPrimary} />}
+            leading={<AppIcon name="eye" size={ICON_SIZES.md} color={colors.textOnPrimary} />}
           />
         ) : (
           <>
@@ -449,7 +446,7 @@ export function ReviewSessionScreen({ sessionId }: ReviewSessionScreenProps) {
                 loading={submittingResult === 'unknown'}
                 leading={
                   submittingResult === 'unknown' ? null : (
-                    <AppIcon name="xmark" size={ICON_SIZES.sm} color={COLORS.danger} weight="bold" />
+                    <AppIcon name="xmark" size={ICON_SIZES.sm} color={colors.danger} weight="bold" />
                   )
                 }
                 style={styles.responseButton}
@@ -464,7 +461,7 @@ export function ReviewSessionScreen({ sessionId }: ReviewSessionScreenProps) {
                     <AppIcon
                       name="checkmarkCircle"
                       size={ICON_SIZES.md}
-                      color={COLORS.textOnPrimary}
+                      color={colors.textOnPrimary}
                     />
                   )
                 }
@@ -482,7 +479,9 @@ export function ReviewSessionScreen({ sessionId }: ReviewSessionScreenProps) {
 type Tone = 'success' | 'danger';
 
 function TallyPill({ icon, value, tone }: { icon: AppIconName; value: number; tone: Tone }) {
-  const color = tone === 'success' ? COLORS.primary : COLORS.danger;
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
+  const color = tone === 'success' ? colors.primary : colors.danger;
 
   return (
     <View
@@ -503,6 +502,8 @@ function TallyPill({ icon, value, tone }: { icon: AppIconName; value: number; to
 }
 
 function SummaryStat({ label, value, tone }: { label: string; value: string; tone?: Tone }) {
+  const styles = useThemedStyles(createStyles);
+
   return (
     <View style={styles.summaryStat}>
       <Text
@@ -529,6 +530,8 @@ function SummaryStat({ label, value, tone }: { label: string; value: string; ton
 }
 
 function DetailSection({ title, children }: { title: string; children: ReactNode }) {
+  const styles = useThemedStyles(createStyles);
+
   return (
     <View style={styles.detailSection}>
       <Text style={styles.detailTitle} maxFontSizeMultiplier={MAX_FONT_SCALE}>
@@ -550,20 +553,31 @@ type StateViewProps = {
 
 function StateView({
   icon,
-  iconColor = COLORS.primary,
-  iconBackground = COLORS.surfaceMuted,
+  iconColor,
+  iconBackground,
   title,
   body,
   children,
 }: StateViewProps) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
+  const resolvedIconColor = iconColor ?? colors.primary;
+  const resolvedIconBackground = iconBackground ?? colors.surfaceMuted;
+
   return (
     <ScrollView
       style={commonStyles.grow}
       contentContainerStyle={[commonStyles.centered, styles.state]}
       showsVerticalScrollIndicator={false}
     >
-      <View style={[commonStyles.centered, styles.stateIcon, { backgroundColor: iconBackground }]}>
-        <AppIcon name={icon} size={36} color={iconColor} />
+      <View
+        style={[
+          commonStyles.centered,
+          styles.stateIcon,
+          { backgroundColor: resolvedIconBackground },
+        ]}
+      >
+        <AppIcon name={icon} size={36} color={resolvedIconColor} />
       </View>
       <Text style={styles.stateTitle} maxFontSizeMultiplier={MAX_FONT_SCALE}>
         {title}
@@ -576,345 +590,346 @@ function StateView({
   );
 }
 
-const cardShadow = createShadow(3, COLORS.accent, 0.08, 14, { width: 0, height: 6 });
+function createStyles(colors: ThemeColors) {
+  const cardShadow = createShadow(3, colors.shadow, 0.08, 14, { width: 0, height: 6 });
+  return StyleSheet.create({
+    scaffold: {
+      paddingBottom: SPACING.md,
+    },
+    container: {
+      width: '100%',
+      maxWidth: CONTENT_MAX_WIDTH,
+      alignSelf: 'center',
+    },
+    scrollContent: {
+      paddingTop: SPACING.xs,
+      paddingBottom: SPACING.lg,
+    },
 
-const styles = StyleSheet.create({
-  scaffold: {
-    paddingBottom: SPACING.md,
-  },
-  container: {
-    width: '100%',
-    maxWidth: CONTENT_MAX_WIDTH,
-    alignSelf: 'center',
-  },
-  scrollContent: {
-    paddingTop: SPACING.xs,
-    paddingBottom: SPACING.lg,
-  },
+    // Progress
+    progressBlock: {
+      marginTop: -SPACING.xs,
+      marginBottom: SPACING.md,
+    },
+    progressLabel: {
+      fontSize: FONT_SIZES.md,
+      fontWeight: FONT_WEIGHTS.semibold,
+      color: colors.text,
+    },
+    tally: {
+      gap: SPACING.xs + 2,
+    },
+    tallyPill: {
+      gap: SPACING.xs,
+      paddingHorizontal: SPACING.sm,
+      paddingVertical: 3,
+      borderRadius: BORDER_RADIUS.round,
+    },
+    tallyPillSuccess: {
+      backgroundColor: colors.surfaceSuccess,
+    },
+    tallyPillDanger: {
+      backgroundColor: colors.surfaceDanger,
+    },
+    tallyText: {
+      fontSize: FONT_SIZES.sm,
+      fontWeight: FONT_WEIGHTS.bold,
+    },
+    progressTrack: {
+      height: SIZES.quizTimerTrackHeight + 2,
+      marginTop: SPACING.sm + 2,
+      borderRadius: BORDER_RADIUS.round,
+      backgroundColor: colors.border,
+      overflow: 'hidden',
+    },
+    progressFill: {
+      height: '100%',
+      borderRadius: BORDER_RADIUS.round,
+      backgroundColor: colors.primary,
+    },
 
-  // Progress
-  progressBlock: {
-    marginTop: -SPACING.xs,
-    marginBottom: SPACING.md,
-  },
-  progressLabel: {
-    fontSize: FONT_SIZES.md,
-    fontWeight: FONT_WEIGHTS.semibold,
-    color: COLORS.text,
-  },
-  tally: {
-    gap: SPACING.xs + 2,
-  },
-  tallyPill: {
-    gap: SPACING.xs,
-    paddingHorizontal: SPACING.sm,
-    paddingVertical: 3,
-    borderRadius: BORDER_RADIUS.round,
-  },
-  tallyPillSuccess: {
-    backgroundColor: COLORS.surfaceSuccess,
-  },
-  tallyPillDanger: {
-    backgroundColor: COLORS.surfaceDanger,
-  },
-  tallyText: {
-    fontSize: FONT_SIZES.sm,
-    fontWeight: FONT_WEIGHTS.bold,
-  },
-  progressTrack: {
-    height: SIZES.quizTimerTrackHeight + 2,
-    marginTop: SPACING.sm + 2,
-    borderRadius: BORDER_RADIUS.round,
-    backgroundColor: COLORS.border,
-    overflow: 'hidden',
-  },
-  progressFill: {
-    height: '100%',
-    borderRadius: BORDER_RADIUS.round,
-    backgroundColor: COLORS.primary,
-  },
+    // Flashcard
+    flashcard: {
+      minHeight: 280,
+      paddingHorizontal: SPACING.xl,
+      paddingVertical: SPACING.xl,
+      borderRadius: BORDER_RADIUS.hero,
+      backgroundColor: colors.card,
+      borderWidth: 1,
+      borderColor: colors.border,
+      alignItems: 'center',
+      justifyContent: 'center',
+      ...cardShadow,
+    },
+    flashcardCompact: {
+      minHeight: 240,
+      paddingHorizontal: SPACING.md,
+      paddingVertical: SPACING.lg,
+    },
+    flashcardPressed: {
+      backgroundColor: colors.surfacePressed,
+      transform: [{ scale: 0.995 }],
+    },
+    directionChip: {
+      position: 'absolute',
+      top: SPACING.md,
+      left: SPACING.md,
+      paddingHorizontal: SPACING.sm + 2,
+      paddingVertical: SPACING.xs,
+      borderRadius: BORDER_RADIUS.round,
+      backgroundColor: colors.surfaceMuted,
+    },
+    directionChipText: {
+      fontSize: FONT_SIZES.xs,
+      fontWeight: FONT_WEIGHTS.semibold,
+      color: colors.primary,
+    },
+    promptHint: {
+      marginTop: SPACING.xl,
+      marginBottom: SPACING.md,
+      fontSize: FONT_SIZES.md,
+      color: colors.textMuted,
+      textAlign: 'center',
+    },
+    promptArabic: {
+      fontSize: 44,
+      lineHeight: 72,
+      fontWeight: FONT_WEIGHTS.bold,
+      color: colors.arabicWord,
+      textAlign: 'center',
+      writingDirection: 'rtl',
+    },
+    promptArabicCompact: {
+      fontSize: 36,
+      lineHeight: 60,
+    },
+    promptMeaning: {
+      fontSize: FONT_SIZES.hero + 4,
+      lineHeight: 40,
+      fontWeight: FONT_WEIGHTS.bold,
+      color: colors.textDark,
+      textAlign: 'center',
+    },
+    promptMeaningCompact: {
+      fontSize: FONT_SIZES.display,
+      lineHeight: 32,
+    },
+    revealPlaceholder: {
+      alignSelf: 'stretch',
+      marginTop: SPACING.xl,
+      paddingVertical: SPACING.md,
+      paddingHorizontal: SPACING.md,
+      gap: SPACING.sm,
+      borderRadius: BORDER_RADIUS.lg,
+      borderWidth: 1.5,
+      borderStyle: 'dashed',
+      borderColor: colors.addButtonBorder,
+      backgroundColor: colors.surfaceAddButton,
+    },
+    revealHint: {
+      flexShrink: 1,
+      fontSize: FONT_SIZES.md,
+      fontWeight: FONT_WEIGHTS.semibold,
+      color: colors.primary,
+    },
+    answerBlock: {
+      alignSelf: 'stretch',
+      alignItems: 'center',
+      marginTop: SPACING.xl,
+      paddingVertical: SPACING.md,
+      paddingHorizontal: SPACING.md,
+      borderRadius: BORDER_RADIUS.lg,
+      backgroundColor: colors.surfaceMuted,
+    },
+    answerLabel: {
+      fontSize: FONT_SIZES.xs,
+      fontWeight: FONT_WEIGHTS.semibold,
+      color: colors.textMuted,
+      letterSpacing: 0.6,
+      textTransform: 'uppercase',
+      marginBottom: SPACING.xs,
+    },
+    answerMeaning: {
+      fontSize: FONT_SIZES.display,
+      lineHeight: 32,
+      fontWeight: FONT_WEIGHTS.bold,
+      color: colors.primary,
+      textAlign: 'center',
+    },
+    answerArabic: {
+      fontSize: FONT_SIZES.stat - 6,
+      lineHeight: 56,
+      fontWeight: FONT_WEIGHTS.bold,
+      color: colors.primary,
+      textAlign: 'center',
+      writingDirection: 'rtl',
+    },
+    answerCompact: {
+      fontSize: FONT_SIZES.xxxl + 2,
+      lineHeight: 40,
+    },
 
-  // Flashcard
-  flashcard: {
-    minHeight: 280,
-    paddingHorizontal: SPACING.xl,
-    paddingVertical: SPACING.xl,
-    borderRadius: BORDER_RADIUS.hero,
-    backgroundColor: COLORS.card,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    alignItems: 'center',
-    justifyContent: 'center',
-    ...cardShadow,
-  },
-  flashcardCompact: {
-    minHeight: 240,
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.lg,
-  },
-  flashcardPressed: {
-    backgroundColor: COLORS.surfacePressed,
-    transform: [{ scale: 0.995 }],
-  },
-  directionChip: {
-    position: 'absolute',
-    top: SPACING.md,
-    left: SPACING.md,
-    paddingHorizontal: SPACING.sm + 2,
-    paddingVertical: SPACING.xs,
-    borderRadius: BORDER_RADIUS.round,
-    backgroundColor: COLORS.surfaceMuted,
-  },
-  directionChipText: {
-    fontSize: FONT_SIZES.xs,
-    fontWeight: FONT_WEIGHTS.semibold,
-    color: COLORS.primary,
-  },
-  promptHint: {
-    marginTop: SPACING.xl,
-    marginBottom: SPACING.md,
-    fontSize: FONT_SIZES.md,
-    color: COLORS.textMuted,
-    textAlign: 'center',
-  },
-  promptArabic: {
-    fontSize: 44,
-    lineHeight: 72,
-    fontWeight: FONT_WEIGHTS.bold,
-    color: COLORS.arabicWord,
-    textAlign: 'center',
-    writingDirection: 'rtl',
-  },
-  promptArabicCompact: {
-    fontSize: 36,
-    lineHeight: 60,
-  },
-  promptMeaning: {
-    fontSize: FONT_SIZES.hero + 4,
-    lineHeight: 40,
-    fontWeight: FONT_WEIGHTS.bold,
-    color: COLORS.textDark,
-    textAlign: 'center',
-  },
-  promptMeaningCompact: {
-    fontSize: FONT_SIZES.display,
-    lineHeight: 32,
-  },
-  revealPlaceholder: {
-    alignSelf: 'stretch',
-    marginTop: SPACING.xl,
-    paddingVertical: SPACING.md,
-    paddingHorizontal: SPACING.md,
-    gap: SPACING.sm,
-    borderRadius: BORDER_RADIUS.lg,
-    borderWidth: 1.5,
-    borderStyle: 'dashed',
-    borderColor: COLORS.addButtonBorder,
-    backgroundColor: COLORS.surfaceAddButton,
-  },
-  revealHint: {
-    flexShrink: 1,
-    fontSize: FONT_SIZES.md,
-    fontWeight: FONT_WEIGHTS.semibold,
-    color: COLORS.primary,
-  },
-  answerBlock: {
-    alignSelf: 'stretch',
-    alignItems: 'center',
-    marginTop: SPACING.xl,
-    paddingVertical: SPACING.md,
-    paddingHorizontal: SPACING.md,
-    borderRadius: BORDER_RADIUS.lg,
-    backgroundColor: COLORS.surfaceMuted,
-  },
-  answerLabel: {
-    fontSize: FONT_SIZES.xs,
-    fontWeight: FONT_WEIGHTS.semibold,
-    color: COLORS.textMuted,
-    letterSpacing: 0.6,
-    textTransform: 'uppercase',
-    marginBottom: SPACING.xs,
-  },
-  answerMeaning: {
-    fontSize: FONT_SIZES.display,
-    lineHeight: 32,
-    fontWeight: FONT_WEIGHTS.bold,
-    color: COLORS.primary,
-    textAlign: 'center',
-  },
-  answerArabic: {
-    fontSize: FONT_SIZES.stat - 6,
-    lineHeight: 56,
-    fontWeight: FONT_WEIGHTS.bold,
-    color: COLORS.primary,
-    textAlign: 'center',
-    writingDirection: 'rtl',
-  },
-  answerCompact: {
-    fontSize: FONT_SIZES.xxxl + 2,
-    lineHeight: 40,
-  },
+    details: {
+      marginTop: SPACING.lg,
+      gap: SPACING.lg,
+    },
+    imageCard: {
+      borderRadius: BORDER_RADIUS.card,
+      overflow: 'hidden',
+      borderWidth: 1,
+      borderColor: colors.border,
+      backgroundColor: colors.card,
+    },
+    image: {
+      width: '100%',
+      aspectRatio: 16 / 9,
+    },
+    detailSection: {
+      gap: SPACING.sm,
+    },
+    detailTitle: {
+      fontSize: FONT_SIZES.sm,
+      fontWeight: FONT_WEIGHTS.bold,
+      color: colors.textMuted,
+      letterSpacing: 0.6,
+      textTransform: 'uppercase',
+      paddingHorizontal: SPACING.xs,
+    },
+    detailCard: {
+      padding: SPACING.md,
+      borderRadius: BORDER_RADIUS.card,
+      borderWidth: 1,
+      borderColor: colors.border,
+      backgroundColor: colors.card,
+    },
+    exampleRow: {
+      paddingVertical: SPACING.sm,
+    },
+    exampleRowBorder: {
+      borderBottomWidth: 1,
+      borderBottomColor: colors.borderLight,
+    },
+    exampleSentence: {
+      fontSize: FONT_SIZES.xxl + 1,
+      lineHeight: 30,
+      fontWeight: FONT_WEIGHTS.semibold,
+      color: colors.arabicWord,
+      textAlign: 'right',
+      writingDirection: 'rtl',
+    },
+    exampleMeaning: {
+      marginTop: SPACING.xs,
+      fontSize: FONT_SIZES.md,
+      lineHeight: 20,
+      color: colors.textMuted,
+    },
+    notesText: {
+      fontSize: FONT_SIZES.md,
+      lineHeight: 22,
+      color: colors.text,
+    },
 
-  details: {
-    marginTop: SPACING.lg,
-    gap: SPACING.lg,
-  },
-  imageCard: {
-    borderRadius: BORDER_RADIUS.card,
-    overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    backgroundColor: COLORS.card,
-  },
-  image: {
-    width: '100%',
-    aspectRatio: 16 / 9,
-  },
-  detailSection: {
-    gap: SPACING.sm,
-  },
-  detailTitle: {
-    fontSize: FONT_SIZES.sm,
-    fontWeight: FONT_WEIGHTS.bold,
-    color: COLORS.textMuted,
-    letterSpacing: 0.6,
-    textTransform: 'uppercase',
-    paddingHorizontal: SPACING.xs,
-  },
-  detailCard: {
-    padding: SPACING.md,
-    borderRadius: BORDER_RADIUS.card,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    backgroundColor: COLORS.card,
-  },
-  exampleRow: {
-    paddingVertical: SPACING.sm,
-  },
-  exampleRowBorder: {
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.borderLight,
-  },
-  exampleSentence: {
-    fontSize: FONT_SIZES.xxl + 1,
-    lineHeight: 30,
-    fontWeight: FONT_WEIGHTS.semibold,
-    color: COLORS.arabicWord,
-    textAlign: 'right',
-    writingDirection: 'rtl',
-  },
-  exampleMeaning: {
-    marginTop: SPACING.xs,
-    fontSize: FONT_SIZES.md,
-    lineHeight: 20,
-    color: COLORS.textMuted,
-  },
-  notesText: {
-    fontSize: FONT_SIZES.md,
-    lineHeight: 22,
-    color: COLORS.text,
-  },
+    // Footer
+    footer: {
+      paddingTop: SPACING.md,
+      borderTopWidth: StyleSheet.hairlineWidth,
+      borderTopColor: colors.border,
+      backgroundColor: colors.background,
+    },
+    footerPrompt: {
+      marginBottom: SPACING.sm + 2,
+      fontSize: FONT_SIZES.sm,
+      fontWeight: FONT_WEIGHTS.semibold,
+      color: colors.textMuted,
+      textAlign: 'center',
+    },
+    footerError: {
+      gap: SPACING.xs + 2,
+      marginBottom: SPACING.sm + 2,
+    },
+    footerErrorText: {
+      flexShrink: 1,
+      fontSize: FONT_SIZES.sm,
+      color: colors.danger,
+    },
+    responseRow: {
+      flexDirection: 'row',
+      gap: SPACING.sm + 2,
+    },
+    responseRowCompact: {
+      flexDirection: 'column',
+    },
+    responseButton: {
+      flex: 1,
+      paddingHorizontal: SPACING.sm + 2,
+    },
 
-  // Footer
-  footer: {
-    paddingTop: SPACING.md,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: COLORS.border,
-    backgroundColor: COLORS.background,
-  },
-  footerPrompt: {
-    marginBottom: SPACING.sm + 2,
-    fontSize: FONT_SIZES.sm,
-    fontWeight: FONT_WEIGHTS.semibold,
-    color: COLORS.textMuted,
-    textAlign: 'center',
-  },
-  footerError: {
-    gap: SPACING.xs + 2,
-    marginBottom: SPACING.sm + 2,
-  },
-  footerErrorText: {
-    flexShrink: 1,
-    fontSize: FONT_SIZES.sm,
-    color: COLORS.danger,
-  },
-  responseRow: {
-    flexDirection: 'row',
-    gap: SPACING.sm + 2,
-  },
-  responseRowCompact: {
-    flexDirection: 'column',
-  },
-  responseButton: {
-    flex: 1,
-    paddingHorizontal: SPACING.sm + 2,
-  },
-
-  state: {
-    flexGrow: 1,
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.xl,
-  },
-  stateIcon: {
-    width: 76,
-    height: 76,
-    borderRadius: BORDER_RADIUS.round,
-    marginBottom: SPACING.lg,
-  },
-  stateTitle: {
-    fontSize: FONT_SIZES.hero - 4,
-    fontWeight: FONT_WEIGHTS.extraBold,
-    color: COLORS.textDark,
-    textAlign: 'center',
-    marginBottom: SPACING.xs + 2,
-  },
-  stateBody: {
-    fontSize: FONT_SIZES.md,
-    lineHeight: 21,
-    color: COLORS.textMuted,
-    textAlign: 'center',
-    maxWidth: 340,
-    marginBottom: SPACING.lg,
-  },
-  stateActions: {
-    alignSelf: 'stretch',
-    gap: SPACING.sm + 2,
-    marginTop: SPACING.sm,
-  },
-  summary: {
-    alignSelf: 'stretch',
-    paddingVertical: SPACING.md,
-    borderRadius: BORDER_RADIUS.card,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    backgroundColor: COLORS.card,
-  },
-  summaryStat: {
-    flex: 1,
-    minWidth: 0,
-    alignItems: 'center',
-    paddingHorizontal: SPACING.xs,
-  },
-  summaryValue: {
-    fontSize: FONT_SIZES.hero,
-    fontWeight: FONT_WEIGHTS.extraBold,
-    color: COLORS.textDark,
-  },
-  summaryValueSuccess: {
-    color: COLORS.primary,
-  },
-  summaryValueDanger: {
-    color: COLORS.danger,
-  },
-  summaryLabel: {
-    marginTop: 2,
-    fontSize: FONT_SIZES.xs,
-    color: COLORS.textMuted,
-  },
-  summaryCaption: {
-    marginTop: SPACING.sm + 2,
-    fontSize: FONT_SIZES.sm,
-    color: COLORS.textMuted,
-    textAlign: 'center',
-  },
-});
+    state: {
+      flexGrow: 1,
+      paddingHorizontal: SPACING.md,
+      paddingVertical: SPACING.xl,
+    },
+    stateIcon: {
+      width: 76,
+      height: 76,
+      borderRadius: BORDER_RADIUS.round,
+      marginBottom: SPACING.lg,
+    },
+    stateTitle: {
+      fontSize: FONT_SIZES.hero - 4,
+      fontWeight: FONT_WEIGHTS.extraBold,
+      color: colors.textDark,
+      textAlign: 'center',
+      marginBottom: SPACING.xs + 2,
+    },
+    stateBody: {
+      fontSize: FONT_SIZES.md,
+      lineHeight: 21,
+      color: colors.textMuted,
+      textAlign: 'center',
+      maxWidth: 340,
+      marginBottom: SPACING.lg,
+    },
+    stateActions: {
+      alignSelf: 'stretch',
+      gap: SPACING.sm + 2,
+      marginTop: SPACING.sm,
+    },
+    summary: {
+      alignSelf: 'stretch',
+      paddingVertical: SPACING.md,
+      borderRadius: BORDER_RADIUS.card,
+      borderWidth: 1,
+      borderColor: colors.border,
+      backgroundColor: colors.card,
+    },
+    summaryStat: {
+      flex: 1,
+      minWidth: 0,
+      alignItems: 'center',
+      paddingHorizontal: SPACING.xs,
+    },
+    summaryValue: {
+      fontSize: FONT_SIZES.hero,
+      fontWeight: FONT_WEIGHTS.extraBold,
+      color: colors.textDark,
+    },
+    summaryValueSuccess: {
+      color: colors.primary,
+    },
+    summaryValueDanger: {
+      color: colors.danger,
+    },
+    summaryLabel: {
+      marginTop: 2,
+      fontSize: FONT_SIZES.xs,
+      color: colors.textMuted,
+    },
+    summaryCaption: {
+      marginTop: SPACING.sm + 2,
+      fontSize: FONT_SIZES.sm,
+      color: colors.textMuted,
+      textAlign: 'center',
+    },
+  });
+}

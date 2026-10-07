@@ -1,7 +1,6 @@
 import * as SQLite from 'expo-sqlite';
 
 import { runMigrations } from '@/db/migrations';
-import { seedVocabulary } from '@/db/seed/seedVocabulary';
 
 const DATABASE_NAME = 'my-arabic.db';
 
@@ -16,7 +15,10 @@ async function openDatabase(): Promise<SQLite.SQLiteDatabase> {
 
 export function getDatabase(): Promise<SQLite.SQLiteDatabase> {
   if (!databasePromise) {
-    databasePromise = openDatabase();
+    databasePromise = openDatabase().catch((error: unknown) => {
+      databasePromise = null;
+      throw error;
+    });
   }
 
   return databasePromise;

@@ -2,7 +2,7 @@ import type { SQLiteDatabase } from 'expo-sqlite';
 
 import { createId } from '@/utils/createId';
 
-const DATABASE_VERSION = 5;
+const DATABASE_VERSION = 6;
 
 export const MIGRATION_V1 = `
 CREATE TABLE IF NOT EXISTS vocabulary (
@@ -198,6 +198,13 @@ const QUIZ_TABLE_DROP_ORDER = [
   'app_user',
 ] as const;
 
+export const MIGRATION_V6 = `
+CREATE TABLE IF NOT EXISTS app_setting (
+  key TEXT PRIMARY KEY NOT NULL,
+  value TEXT NOT NULL
+);
+`;
+
 async function hasOutdatedQuizSchema(db: SQLiteDatabase): Promise<boolean> {
   for (const [table, requiredColumns] of Object.entries(QUIZ_TABLE_COLUMNS)) {
     const columns = await db.getAllAsync<{ name: string }>(`PRAGMA table_info(${table});`);
@@ -312,6 +319,15 @@ export async function runMigrations(db: SQLiteDatabase): Promise<void> {
 
   if ((versionAfterV4?.user_version ?? 0) < 5) {
     await db.execAsync(MIGRATION_V5);
+    await db.execAsync('PRAGMA user_version = 5;');
+  }
+
+  const versionAfterV5 = await db.getFirstAsync<{ user_version: number }>(
+    'PRAGMA user_version;',
+  );
+
+  if ((versionAfterV5?.user_version ?? 0) < 6) {
+    await db.execAsync(MIGRATION_V6);
     await db.execAsync(`PRAGMA user_version = ${DATABASE_VERSION};`);
   }
 }

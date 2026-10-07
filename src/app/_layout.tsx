@@ -2,12 +2,14 @@ import { Image } from 'expo-image';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, View, useColorScheme } from 'react-native';
 
 import { AppAlertProvider } from '@/components/ui/AppAlertProvider';
 import { BottomNav } from '@/components/ui/BottomNav';
-import { COLORS, FONT_SIZES, SPACING } from '@/constants/theme';
+import { FONT_SIZES, SPACING, getColorsForScheme, type ThemeColors } from '@/constants/theme';
 import { initializeDatabase } from '@/db/database';
+import { ThemeProvider } from '@/theme/ThemeProvider';
+import { useThemedStyles } from '@/theme/useThemedStyles';
 
 SplashScreen.preventAutoHideAsync().catch(() => {
   // Splash may already be hidden after a fast refresh.
@@ -35,6 +37,27 @@ export default function RootLayout() {
     }
   }, [isReady]);
 
+  if (!isReady) {
+    return <BootScreen errorMessage={errorMessage} />;
+  }
+
+  return (
+    <ThemeProvider>
+      <AppRoot />
+    </ThemeProvider>
+  );
+}
+
+type BootScreenProps = {
+  errorMessage: string | null;
+};
+
+// Rendered before the database (and saved appearance preference) is available,
+// so it follows the system color scheme.
+function BootScreen({ errorMessage }: BootScreenProps) {
+  const colors = getColorsForScheme(useColorScheme() === 'dark' ? 'dark' : 'light');
+  const styles = createStyles(colors);
+
   if (errorMessage) {
     return (
       <View style={styles.centered}>
@@ -44,14 +67,16 @@ export default function RootLayout() {
     );
   }
 
-  if (!isReady) {
-    return (
-      <View style={styles.splash}>
-        <Image source={SPLASH_LOGO} style={styles.splashLogo} contentFit="contain" />
-        <ActivityIndicator size="small" color={COLORS.primary} style={styles.splashSpinner} />
-      </View>
-    );
-  }
+  return (
+    <View style={styles.splash}>
+      <Image source={SPLASH_LOGO} style={styles.splashLogo} contentFit="contain" />
+      <ActivityIndicator size="small" color={colors.primary} style={styles.splashSpinner} />
+    </View>
+  );
+}
+
+function AppRoot() {
+  const styles = useThemedStyles(createStyles);
 
   return (
     <AppAlertProvider>
@@ -65,40 +90,42 @@ export default function RootLayout() {
   );
 }
 
-const styles = StyleSheet.create({
-  app: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-  },
-  centered: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: COLORS.background,
-    paddingHorizontal: SPACING.lg,
-  },
-  splash: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: COLORS.background,
-    paddingHorizontal: SPACING.xl,
-  },
-  splashLogo: {
-    width: 200,
-    height: 200,
-  },
-  splashSpinner: {
-    marginTop: SPACING.lg,
-  },
-  errorTitle: {
-    fontSize: FONT_SIZES.xxl,
-    color: COLORS.text,
-    marginBottom: SPACING.xs,
-  },
-  errorBody: {
-    fontSize: FONT_SIZES.md,
-    color: COLORS.textMuted,
-    textAlign: 'center',
-  },
-});
+function createStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    app: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    centered: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: colors.background,
+      paddingHorizontal: SPACING.lg,
+    },
+    splash: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: colors.background,
+      paddingHorizontal: SPACING.xl,
+    },
+    splashLogo: {
+      width: 200,
+      height: 200,
+    },
+    splashSpinner: {
+      marginTop: SPACING.lg,
+    },
+    errorTitle: {
+      fontSize: FONT_SIZES.xxl,
+      color: colors.text,
+      marginBottom: SPACING.xs,
+    },
+    errorBody: {
+      fontSize: FONT_SIZES.md,
+      color: colors.textMuted,
+      textAlign: 'center',
+    },
+  });
+}

@@ -1,4 +1,53 @@
-export const COLORS = {
+export type ColorScheme = 'light' | 'dark';
+
+export const APPEARANCE_PREFERENCES = ['system', 'light', 'dark'] as const;
+
+export type AppearancePreference = (typeof APPEARANCE_PREFERENCES)[number];
+
+export type ThemeColors = {
+  primary: string;
+  primaryDark: string;
+  primaryLight: string;
+  secondary: string;
+  accent: string;
+  background: string;
+  card: string;
+  text: string;
+  textDark: string;
+  textMuted: string;
+  textMutedSecondary: string;
+  textOnPrimary: string;
+  textOnDarkCard: string;
+  textOnDarkCardMuted: string;
+  border: string;
+  borderLight: string;
+  surfaceMuted: string;
+  surfaceProfile: string;
+  surfaceWordIcon: string;
+  surfacePressed: string;
+  surfaceAddButton: string;
+  surfaceAddButtonPressed: string;
+  addButtonBorder: string;
+  wordIconText: string;
+  chevron: string;
+  arabicWord: string;
+  danger: string;
+  surfaceDanger: string;
+  borderDanger: string;
+  surfaceSuccess: string;
+  borderSuccess: string;
+  decorationOverlay: string;
+  heroIconChip: string;
+  heroLinkSurface: string;
+  heroDivider: string;
+  surfaceInput: string;
+  inputFocusBorder: string;
+  inputFocusHalo: string;
+  imageScrim: string;
+  shadow: string;
+};
+
+export const LIGHT_COLORS: ThemeColors = {
   primary: '#28744E',
   primaryDark: '#193D2E',
   primaryLight: '#276749',
@@ -38,7 +87,55 @@ export const COLORS = {
   inputFocusBorder: '#28744E',
   inputFocusHalo: 'rgba(40, 116, 78, 0.10)',
   imageScrim: 'rgba(24, 57, 43, 0.55)',
-} as const;
+  shadow: '#18392B',
+};
+
+export const DARK_COLORS: ThemeColors = {
+  primary: '#3D9B73',
+  primaryDark: '#142820',
+  primaryLight: '#4AAF82',
+  secondary: '#2A3D32',
+  accent: '#0A0F0C',
+  background: '#0E1411',
+  card: '#171F1B',
+  text: '#E6EBE8',
+  textDark: '#F2F6F3',
+  textMuted: '#8A968F',
+  textMutedSecondary: '#7A877F',
+  textOnPrimary: '#FFFFFF',
+  textOnDarkCard: '#D4E5DA',
+  textOnDarkCardMuted: '#9FB5A8',
+  border: '#2A332E',
+  borderLight: '#222B27',
+  surfaceMuted: '#1E2823',
+  surfaceProfile: '#243029',
+  surfaceWordIcon: '#222C27',
+  surfacePressed: '#252F2A',
+  surfaceAddButton: '#1C2621',
+  surfaceAddButtonPressed: '#28332D',
+  addButtonBorder: '#3D5C4A',
+  wordIconText: '#9AABA2',
+  chevron: '#6B756F',
+  arabicWord: '#DCE5DF',
+  danger: '#F2B8B5',
+  surfaceDanger: '#3A2220',
+  borderDanger: '#6E4541',
+  surfaceSuccess: '#1A2E24',
+  borderSuccess: '#3D5C4A',
+  decorationOverlay: 'rgba(255,255,255,0.06)',
+  heroIconChip: 'rgba(255,255,255,0.14)',
+  heroLinkSurface: 'rgba(255,255,255,0.10)',
+  heroDivider: 'rgba(255,255,255,0.18)',
+  surfaceInput: '#1A221E',
+  inputFocusBorder: '#3D9B73',
+  inputFocusHalo: 'rgba(61, 155, 115, 0.22)',
+  imageScrim: 'rgba(0, 0, 0, 0.62)',
+  shadow: '#000000',
+};
+
+export function getColorsForScheme(scheme: ColorScheme): ThemeColors {
+  return scheme === 'dark' ? DARK_COLORS : LIGHT_COLORS;
+}
 
 export const SPACING = {
   xs: 4,

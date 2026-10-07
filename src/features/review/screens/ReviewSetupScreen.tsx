@@ -16,15 +16,9 @@ import { AppIcon, type AppIconName } from '@/components/ui/AppIcon';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { ScreenScaffold } from '@/components/ui/ScreenScaffold';
-import {
-  BORDER_RADIUS,
-  COLORS,
-  FONT_SIZES,
-  FONT_WEIGHTS,
-  ICON_SIZES,
-  SIZES,
-  SPACING,
-} from '@/constants/theme';
+import { type ThemeColors, BORDER_RADIUS, FONT_SIZES, FONT_WEIGHTS, ICON_SIZES, SIZES, SPACING } from '@/constants/theme';
+import { useThemedStyles } from '@/theme/useThemedStyles';
+import { useTheme } from '@/theme/useTheme';
 import {
   DAILY_REVIEW_PRESET_COUNTS,
   DEFAULT_DAILY_REVIEW_COUNT,
@@ -70,6 +64,9 @@ function formatEstimate(cardCount: number) {
 }
 
 export function ReviewSetupScreen() {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
+
   const [availableCount, setAvailableCount] = useState(0);
   const [quizEligibleCount, setQuizEligibleCount] = useState(0);
   const [cardCountInput, setCardCountInput] = useState('');
@@ -177,7 +174,7 @@ export function ReviewSetupScreen() {
     if (isLoading) {
       return (
         <View style={[commonStyles.grow, commonStyles.centered]}>
-          <ActivityIndicator color={COLORS.primary} />
+          <ActivityIndicator color={colors.primary} />
         </View>
       );
     }
@@ -186,8 +183,8 @@ export function ReviewSetupScreen() {
       return (
         <StateView
           icon="warning"
-          iconColor={COLORS.danger}
-          iconBackground={COLORS.surfaceDanger}
+          iconColor={colors.danger}
+          iconBackground={colors.surfaceDanger}
           title="Could not open review"
           body={loadError}
         >
@@ -281,7 +278,7 @@ export function ReviewSetupScreen() {
                 <AppIcon
                   name="arrowRight"
                   size={ICON_SIZES.md}
-                  color={COLORS.textOnPrimary}
+                  color={colors.textOnPrimary}
                   weight="bold"
                 />
               }
@@ -353,7 +350,7 @@ export function ReviewSetupScreen() {
                   inputMode="numeric"
                   maxLength={5}
                   placeholder="0"
-                  placeholderTextColor={COLORS.chevron}
+                  placeholderTextColor={colors.chevron}
                   selectTextOnFocus
                   style={[styles.stepperInput, !validation.ok && styles.stepperInputError]}
                   maxFontSizeMultiplier={1.2}
@@ -375,7 +372,7 @@ export function ReviewSetupScreen() {
 
             {!validation.ok ? (
               <View style={[commonStyles.row, commonStyles.alignCenter, styles.inlineError]}>
-                <AppIcon name="warning" size={ICON_SIZES.sm} color={COLORS.danger} />
+                <AppIcon name="warning" size={ICON_SIZES.sm} color={colors.danger} />
                 <Text style={styles.inlineErrorText} maxFontSizeMultiplier={MAX_FONT_SCALE}>
                   {validation.error}
                 </Text>
@@ -428,7 +425,7 @@ export function ReviewSetupScreen() {
                 ]}
               >
                 <View style={[commonStyles.centered, styles.stepIcon]}>
-                  <AppIcon name={step.icon} size={ICON_SIZES.md} color={COLORS.primary} />
+                  <AppIcon name={step.icon} size={ICON_SIZES.md} color={colors.primary} />
                 </View>
                 <View style={[commonStyles.grow, styles.stepText]}>
                   <Text style={styles.stepTitle} maxFontSizeMultiplier={MAX_FONT_SCALE}>
@@ -446,7 +443,7 @@ export function ReviewSetupScreen() {
         <View style={styles.footer}>
           {startError ? (
             <View style={[commonStyles.row, commonStyles.alignCenter, styles.footerError]}>
-              <AppIcon name="warning" size={ICON_SIZES.sm} color={COLORS.danger} />
+              <AppIcon name="warning" size={ICON_SIZES.sm} color={colors.danger} />
               <Text style={styles.inlineErrorText} maxFontSizeMultiplier={MAX_FONT_SCALE}>
                 {startError}
               </Text>
@@ -462,7 +459,7 @@ export function ReviewSetupScreen() {
                 <AppIcon
                   name="arrowRight"
                   size={ICON_SIZES.md}
-                  color={COLORS.textOnPrimary}
+                  color={colors.textOnPrimary}
                   weight="bold"
                 />
               )
@@ -494,6 +491,9 @@ type StepperButtonProps = {
 };
 
 function StepperButton({ icon, label, disabled, onPress }: StepperButtonProps) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
+
   return (
     <Pressable
       onPress={onPress}
@@ -509,7 +509,7 @@ function StepperButton({ icon, label, disabled, onPress }: StepperButtonProps) {
         pressed && !disabled && styles.stepperButtonPressed,
       ]}
     >
-      <AppIcon name={icon} size={ICON_SIZES.lg} color={COLORS.primary} weight="bold" />
+      <AppIcon name={icon} size={ICON_SIZES.lg} color={colors.primary} weight="bold" />
     </Pressable>
   );
 }
@@ -525,16 +525,27 @@ type StateViewProps = {
 
 function StateView({
   icon,
-  iconColor = COLORS.primary,
-  iconBackground = COLORS.surfaceMuted,
+  iconColor,
+  iconBackground,
   title,
   body,
   children,
 }: StateViewProps) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
+  const resolvedIconColor = iconColor ?? colors.primary;
+  const resolvedIconBackground = iconBackground ?? colors.surfaceMuted;
+
   return (
     <View style={[commonStyles.grow, commonStyles.centered, styles.state]}>
-      <View style={[commonStyles.centered, styles.stateIcon, { backgroundColor: iconBackground }]}>
-        <AppIcon name={icon} size={ICON_SIZES.xxl} color={iconColor} />
+      <View
+        style={[
+          commonStyles.centered,
+          styles.stateIcon,
+          { backgroundColor: resolvedIconBackground },
+        ]}
+      >
+        <AppIcon name={icon} size={ICON_SIZES.xxl} color={resolvedIconColor} />
       </View>
       <Text style={styles.stateTitle} maxFontSizeMultiplier={MAX_FONT_SCALE}>
         {title}
@@ -547,300 +558,301 @@ function StateView({
   );
 }
 
-const cardShadow = createShadow(2, COLORS.accent, 0.06, 10, { width: 0, height: 4 });
-const heroShadow = createShadow(6, COLORS.accent, 0.2, 16, { width: 0, height: 8 });
+function createStyles(colors: ThemeColors) {
+  const cardShadow = createShadow(2, colors.shadow, 0.06, 10, { width: 0, height: 4 });
+  const heroShadow = createShadow(6, colors.shadow, 0.2, 16, { width: 0, height: 8 });
+  return StyleSheet.create({
+    scaffold: {
+      paddingBottom: SPACING.md,
+    },
+    container: {
+      width: '100%',
+      maxWidth: CONTENT_MAX_WIDTH,
+      alignSelf: 'center',
+    },
+    scrollContent: {
+      paddingBottom: SPACING.lg,
+    },
 
-const styles = StyleSheet.create({
-  scaffold: {
-    paddingBottom: SPACING.md,
-  },
-  container: {
-    width: '100%',
-    maxWidth: CONTENT_MAX_WIDTH,
-    alignSelf: 'center',
-  },
-  scrollContent: {
-    paddingBottom: SPACING.lg,
-  },
+    // Hero
+    heroCard: {
+      padding: SPACING.lg,
+      borderRadius: BORDER_RADIUS.hero,
+      backgroundColor: colors.primaryDark,
+      overflow: 'hidden',
+      marginBottom: SPACING.lg,
+      ...heroShadow,
+    },
+    heroDecoration: {
+      position: 'absolute',
+      right: -SPACING.sm,
+      bottom: -SPACING.md,
+      fontSize: FONT_SIZES.decoration,
+      fontWeight: FONT_WEIGHTS.bold,
+      color: colors.decorationOverlay,
+    },
+    heroLabel: {
+      fontSize: FONT_SIZES.lg,
+      fontWeight: FONT_WEIGHTS.semibold,
+      color: colors.textOnDarkCard,
+    },
+    heroBadge: {
+      alignSelf: 'flex-start',
+      paddingHorizontal: SPACING.sm + 2,
+      paddingVertical: SPACING.xs,
+      borderRadius: BORDER_RADIUS.round,
+      backgroundColor: colors.heroLinkSurface,
+    },
+    heroBadgeText: {
+      fontSize: FONT_SIZES.xs,
+      fontWeight: FONT_WEIGHTS.semibold,
+      color: colors.textOnDarkCard,
+      letterSpacing: 0.4,
+      textTransform: 'uppercase',
+    },
+    heroValueRow: {
+      alignItems: 'baseline',
+      flexWrap: 'wrap',
+      columnGap: SPACING.sm,
+      marginTop: SPACING.md,
+    },
+    heroValue: {
+      fontSize: FONT_SIZES.stat,
+      lineHeight: FONT_SIZES.stat + 8,
+      fontWeight: FONT_WEIGHTS.extraBold,
+      color: colors.textOnPrimary,
+      letterSpacing: -1,
+    },
+    heroValueUnit: {
+      fontSize: FONT_SIZES.md,
+      fontWeight: FONT_WEIGHTS.medium,
+      color: colors.textOnDarkCardMuted,
+    },
+    heroTrack: {
+      height: 8,
+      marginTop: SPACING.md,
+      borderRadius: BORDER_RADIUS.round,
+      backgroundColor: colors.heroIconChip,
+      overflow: 'hidden',
+    },
+    heroFill: {
+      height: '100%',
+      borderRadius: BORDER_RADIUS.round,
+      backgroundColor: colors.secondary,
+    },
+    heroMeta: {
+      marginTop: SPACING.sm,
+      gap: SPACING.sm,
+    },
+    heroMetaText: {
+      flexShrink: 1,
+      fontSize: FONT_SIZES.sm,
+      color: colors.textOnDarkCardMuted,
+    },
+    heroStats: {
+      marginTop: SPACING.md,
+    },
+    heroStat: {
+      flex: 1,
+      minWidth: 0,
+    },
+    heroStatDivider: {
+      paddingLeft: SPACING.md,
+      borderLeftWidth: StyleSheet.hairlineWidth,
+      borderLeftColor: colors.heroDivider,
+    },
+    heroStatValue: {
+      fontSize: FONT_SIZES.stat - 8,
+      lineHeight: FONT_SIZES.stat,
+      fontWeight: FONT_WEIGHTS.extraBold,
+      color: colors.textOnPrimary,
+    },
+    heroStatLabel: {
+      fontSize: FONT_SIZES.sm,
+      color: colors.textOnDarkCardMuted,
+    },
 
-  // Hero
-  heroCard: {
-    padding: SPACING.lg,
-    borderRadius: BORDER_RADIUS.hero,
-    backgroundColor: COLORS.primaryDark,
-    overflow: 'hidden',
-    marginBottom: SPACING.lg,
-    ...heroShadow,
-  },
-  heroDecoration: {
-    position: 'absolute',
-    right: -SPACING.sm,
-    bottom: -SPACING.md,
-    fontSize: FONT_SIZES.decoration,
-    fontWeight: FONT_WEIGHTS.bold,
-    color: COLORS.decorationOverlay,
-  },
-  heroLabel: {
-    fontSize: FONT_SIZES.lg,
-    fontWeight: FONT_WEIGHTS.semibold,
-    color: COLORS.textOnDarkCard,
-  },
-  heroBadge: {
-    alignSelf: 'flex-start',
-    paddingHorizontal: SPACING.sm + 2,
-    paddingVertical: SPACING.xs,
-    borderRadius: BORDER_RADIUS.round,
-    backgroundColor: 'rgba(255,255,255,0.12)',
-  },
-  heroBadgeText: {
-    fontSize: FONT_SIZES.xs,
-    fontWeight: FONT_WEIGHTS.semibold,
-    color: COLORS.textOnDarkCard,
-    letterSpacing: 0.4,
-    textTransform: 'uppercase',
-  },
-  heroValueRow: {
-    alignItems: 'baseline',
-    flexWrap: 'wrap',
-    columnGap: SPACING.sm,
-    marginTop: SPACING.md,
-  },
-  heroValue: {
-    fontSize: FONT_SIZES.stat,
-    lineHeight: FONT_SIZES.stat + 8,
-    fontWeight: FONT_WEIGHTS.extraBold,
-    color: COLORS.textOnPrimary,
-    letterSpacing: -1,
-  },
-  heroValueUnit: {
-    fontSize: FONT_SIZES.md,
-    fontWeight: FONT_WEIGHTS.medium,
-    color: COLORS.textOnDarkCardMuted,
-  },
-  heroTrack: {
-    height: 8,
-    marginTop: SPACING.md,
-    borderRadius: BORDER_RADIUS.round,
-    backgroundColor: 'rgba(255,255,255,0.14)',
-    overflow: 'hidden',
-  },
-  heroFill: {
-    height: '100%',
-    borderRadius: BORDER_RADIUS.round,
-    backgroundColor: COLORS.secondary,
-  },
-  heroMeta: {
-    marginTop: SPACING.sm,
-    gap: SPACING.sm,
-  },
-  heroMetaText: {
-    flexShrink: 1,
-    fontSize: FONT_SIZES.sm,
-    color: COLORS.textOnDarkCardMuted,
-  },
-  heroStats: {
-    marginTop: SPACING.md,
-  },
-  heroStat: {
-    flex: 1,
-    minWidth: 0,
-  },
-  heroStatDivider: {
-    paddingLeft: SPACING.md,
-    borderLeftWidth: StyleSheet.hairlineWidth,
-    borderLeftColor: 'rgba(255,255,255,0.2)',
-  },
-  heroStatValue: {
-    fontSize: FONT_SIZES.stat - 8,
-    lineHeight: FONT_SIZES.stat,
-    fontWeight: FONT_WEIGHTS.extraBold,
-    color: COLORS.textOnPrimary,
-  },
-  heroStatLabel: {
-    fontSize: FONT_SIZES.sm,
-    color: COLORS.textOnDarkCardMuted,
-  },
+    card: {
+      padding: SPACING.lg,
+      borderRadius: BORDER_RADIUS.card,
+      borderWidth: 1,
+      borderColor: colors.border,
+      backgroundColor: colors.card,
+      marginBottom: SPACING.xl,
+      ...cardShadow,
+    },
+    cardTitle: {
+      fontSize: FONT_SIZES.xxl,
+      fontWeight: FONT_WEIGHTS.bold,
+      color: colors.text,
+    },
+    cardSubtitle: {
+      marginTop: 2,
+      fontSize: FONT_SIZES.md,
+      color: colors.textMuted,
+    },
+    stepper: {
+      marginTop: SPACING.lg,
+      gap: SPACING.md,
+    },
+    stepperButton: {
+      width: 52,
+      height: 52,
+      borderRadius: BORDER_RADIUS.lg,
+      backgroundColor: colors.surfaceMuted,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    stepperButtonPressed: {
+      backgroundColor: colors.surfaceAddButtonPressed,
+    },
+    stepperButtonDisabled: {
+      opacity: 0.4,
+    },
+    stepperInput: {
+      minWidth: 96,
+      paddingVertical: 0,
+      fontSize: FONT_SIZES.stat,
+      lineHeight: FONT_SIZES.stat + 8,
+      fontWeight: FONT_WEIGHTS.extraBold,
+      color: colors.textDark,
+      textAlign: 'center',
+    },
+    stepperInputError: {
+      color: colors.danger,
+    },
+    stepperUnit: {
+      fontSize: FONT_SIZES.sm,
+      fontWeight: FONT_WEIGHTS.medium,
+      color: colors.textMuted,
+    },
+    inlineError: {
+      marginTop: SPACING.md,
+      gap: SPACING.xs + 2,
+    },
+    inlineErrorText: {
+      flexShrink: 1,
+      fontSize: FONT_SIZES.sm,
+      color: colors.danger,
+    },
+    presets: {
+      marginTop: SPACING.lg,
+      gap: SPACING.sm,
+      flexWrap: 'wrap',
+    },
+    preset: {
+      flexGrow: 1,
+      flexBasis: 64,
+      alignItems: 'center',
+      paddingHorizontal: SPACING.md,
+      paddingVertical: SPACING.sm + 2,
+      borderRadius: BORDER_RADIUS.round,
+      borderWidth: 1,
+      borderColor: colors.border,
+      backgroundColor: colors.card,
+    },
+    presetSelected: {
+      borderColor: colors.primary,
+      backgroundColor: colors.primary,
+    },
+    presetPressed: {
+      backgroundColor: colors.surfacePressed,
+    },
+    presetLabel: {
+      fontSize: FONT_SIZES.md,
+      fontWeight: FONT_WEIGHTS.semibold,
+      color: colors.text,
+    },
+    presetLabelSelected: {
+      color: colors.textOnPrimary,
+    },
 
-  card: {
-    padding: SPACING.lg,
-    borderRadius: BORDER_RADIUS.card,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    backgroundColor: COLORS.card,
-    marginBottom: SPACING.xl,
-    ...cardShadow,
-  },
-  cardTitle: {
-    fontSize: FONT_SIZES.xxl,
-    fontWeight: FONT_WEIGHTS.bold,
-    color: COLORS.text,
-  },
-  cardSubtitle: {
-    marginTop: 2,
-    fontSize: FONT_SIZES.md,
-    color: COLORS.textMuted,
-  },
-  stepper: {
-    marginTop: SPACING.lg,
-    gap: SPACING.md,
-  },
-  stepperButton: {
-    width: 52,
-    height: 52,
-    borderRadius: BORDER_RADIUS.lg,
-    backgroundColor: COLORS.surfaceMuted,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-  },
-  stepperButtonPressed: {
-    backgroundColor: COLORS.surfaceAddButtonPressed,
-  },
-  stepperButtonDisabled: {
-    opacity: 0.4,
-  },
-  stepperInput: {
-    minWidth: 96,
-    paddingVertical: 0,
-    fontSize: FONT_SIZES.stat,
-    lineHeight: FONT_SIZES.stat + 8,
-    fontWeight: FONT_WEIGHTS.extraBold,
-    color: COLORS.textDark,
-    textAlign: 'center',
-  },
-  stepperInputError: {
-    color: COLORS.danger,
-  },
-  stepperUnit: {
-    fontSize: FONT_SIZES.sm,
-    fontWeight: FONT_WEIGHTS.medium,
-    color: COLORS.textMuted,
-  },
-  inlineError: {
-    marginTop: SPACING.md,
-    gap: SPACING.xs + 2,
-  },
-  inlineErrorText: {
-    flexShrink: 1,
-    fontSize: FONT_SIZES.sm,
-    color: COLORS.danger,
-  },
-  presets: {
-    marginTop: SPACING.lg,
-    gap: SPACING.sm,
-    flexWrap: 'wrap',
-  },
-  preset: {
-    flexGrow: 1,
-    flexBasis: 64,
-    alignItems: 'center',
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm + 2,
-    borderRadius: BORDER_RADIUS.round,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    backgroundColor: COLORS.card,
-  },
-  presetSelected: {
-    borderColor: COLORS.primary,
-    backgroundColor: COLORS.primary,
-  },
-  presetPressed: {
-    backgroundColor: COLORS.surfacePressed,
-  },
-  presetLabel: {
-    fontSize: FONT_SIZES.md,
-    fontWeight: FONT_WEIGHTS.semibold,
-    color: COLORS.text,
-  },
-  presetLabelSelected: {
-    color: COLORS.textOnPrimary,
-  },
+    sectionTitle: {
+      fontSize: FONT_SIZES.xxl,
+      fontWeight: FONT_WEIGHTS.bold,
+      color: colors.text,
+      marginBottom: SPACING.sm + SPACING.xs,
+    },
+    stepsCard: {
+      borderRadius: BORDER_RADIUS.card,
+      borderWidth: 1,
+      borderColor: colors.border,
+      backgroundColor: colors.card,
+      overflow: 'hidden',
+    },
+    stepRow: {
+      padding: SPACING.md,
+      gap: SPACING.md - 2,
+    },
+    stepRowBorder: {
+      borderBottomWidth: 1,
+      borderBottomColor: colors.borderLight,
+    },
+    stepIcon: {
+      width: SIZES.iconButton + 4,
+      height: SIZES.iconButton + 4,
+      borderRadius: BORDER_RADIUS.sm,
+      backgroundColor: colors.surfaceMuted,
+    },
+    stepText: {
+      minWidth: 0,
+    },
+    stepTitle: {
+      fontSize: FONT_SIZES.lg,
+      fontWeight: FONT_WEIGHTS.bold,
+      color: colors.text,
+    },
+    stepBody: {
+      marginTop: 2,
+      fontSize: FONT_SIZES.sm,
+      lineHeight: 19,
+      color: colors.textMuted,
+    },
 
-  sectionTitle: {
-    fontSize: FONT_SIZES.xxl,
-    fontWeight: FONT_WEIGHTS.bold,
-    color: COLORS.text,
-    marginBottom: SPACING.sm + SPACING.xs,
-  },
-  stepsCard: {
-    borderRadius: BORDER_RADIUS.card,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    backgroundColor: COLORS.card,
-    overflow: 'hidden',
-  },
-  stepRow: {
-    padding: SPACING.md,
-    gap: SPACING.md - 2,
-  },
-  stepRowBorder: {
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.borderLight,
-  },
-  stepIcon: {
-    width: SIZES.iconButton + 4,
-    height: SIZES.iconButton + 4,
-    borderRadius: BORDER_RADIUS.sm,
-    backgroundColor: COLORS.surfaceMuted,
-  },
-  stepText: {
-    minWidth: 0,
-  },
-  stepTitle: {
-    fontSize: FONT_SIZES.lg,
-    fontWeight: FONT_WEIGHTS.bold,
-    color: COLORS.text,
-  },
-  stepBody: {
-    marginTop: 2,
-    fontSize: FONT_SIZES.sm,
-    lineHeight: 19,
-    color: COLORS.textMuted,
-  },
+    helperText: {
+      fontSize: FONT_SIZES.md,
+      lineHeight: 21,
+      color: colors.textMuted,
+      paddingHorizontal: SPACING.xs,
+    },
 
-  helperText: {
-    fontSize: FONT_SIZES.md,
-    lineHeight: 21,
-    color: COLORS.textMuted,
-    paddingHorizontal: SPACING.xs,
-  },
+    footer: {
+      paddingTop: SPACING.md,
+      borderTopWidth: StyleSheet.hairlineWidth,
+      borderTopColor: colors.border,
+      backgroundColor: colors.background,
+    },
+    footerError: {
+      gap: SPACING.xs + 2,
+      marginBottom: SPACING.sm + 2,
+    },
 
-  footer: {
-    paddingTop: SPACING.md,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: COLORS.border,
-    backgroundColor: COLORS.background,
-  },
-  footerError: {
-    gap: SPACING.xs + 2,
-    marginBottom: SPACING.sm + 2,
-  },
-
-  state: {
-    paddingHorizontal: SPACING.lg,
-  },
-  stateIcon: {
-    width: 64,
-    height: 64,
-    borderRadius: BORDER_RADIUS.round,
-    marginBottom: SPACING.md,
-  },
-  stateTitle: {
-    fontSize: FONT_SIZES.xxxl,
-    fontWeight: FONT_WEIGHTS.bold,
-    color: COLORS.text,
-    marginBottom: SPACING.xs + 2,
-    textAlign: 'center',
-  },
-  stateBody: {
-    fontSize: FONT_SIZES.md,
-    lineHeight: 21,
-    color: COLORS.textMuted,
-    textAlign: 'center',
-    maxWidth: 320,
-    marginBottom: SPACING.lg,
-  },
-  stateButton: {
-    alignSelf: 'stretch',
-  },
-});
+    state: {
+      paddingHorizontal: SPACING.lg,
+    },
+    stateIcon: {
+      width: 64,
+      height: 64,
+      borderRadius: BORDER_RADIUS.round,
+      marginBottom: SPACING.md,
+    },
+    stateTitle: {
+      fontSize: FONT_SIZES.xxxl,
+      fontWeight: FONT_WEIGHTS.bold,
+      color: colors.text,
+      marginBottom: SPACING.xs + 2,
+      textAlign: 'center',
+    },
+    stateBody: {
+      fontSize: FONT_SIZES.md,
+      lineHeight: 21,
+      color: colors.textMuted,
+      textAlign: 'center',
+      maxWidth: 320,
+      marginBottom: SPACING.lg,
+    },
+    stateButton: {
+      alignSelf: 'stretch',
+    },
+  });
+}

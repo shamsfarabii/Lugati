@@ -2,13 +2,8 @@ import { useCallback, useEffect, useState, type ReactNode } from 'react';
 import { Modal, StyleSheet, Text, View } from 'react-native';
 
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
-import {
-  BORDER_RADIUS,
-  COLORS,
-  FONT_SIZES,
-  FONT_WEIGHTS,
-  SPACING,
-} from '@/constants/theme';
+import { type ThemeColors, BORDER_RADIUS, FONT_SIZES, FONT_WEIGHTS, SPACING } from '@/constants/theme';
+import { useThemedStyles } from '@/theme/useThemedStyles';
 import { createShadow } from '@/helpers/styleHelpers';
 import {
   registerAppAlertHandler,
@@ -19,8 +14,6 @@ import {
 type AppAlertProviderProps = {
   children: ReactNode;
 };
-
-const cardShadow = createShadow(8, COLORS.accent, 0.12, 16);
 
 function orderButtons(buttons: AppAlertButton[]): AppAlertButton[] {
   const cancelButtons = buttons.filter((button) => button.style === 'cancel');
@@ -54,6 +47,8 @@ function resolveButtonVariant(
 }
 
 export function AppAlertProvider({ children }: AppAlertProviderProps) {
+  const styles = useThemedStyles(createStyles);
+
   const [queue, setQueue] = useState<AppAlertRequest[]>([]);
   const active = queue[0] ?? null;
 
@@ -130,46 +125,49 @@ export function AppAlertProvider({ children }: AppAlertProviderProps) {
   );
 }
 
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    justifyContent: 'center',
-    paddingHorizontal: SPACING.lg,
-    backgroundColor: COLORS.imageScrim,
-  },
-  backdrop: {
-    ...StyleSheet.absoluteFill,
-  },
-  card: {
-    backgroundColor: COLORS.card,
-    borderRadius: BORDER_RADIUS.hero,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    paddingHorizontal: SPACING.lg,
-    paddingTop: SPACING.xl,
-    paddingBottom: SPACING.lg,
-    gap: SPACING.sm,
-    ...cardShadow,
-  },
-  title: {
-    fontSize: FONT_SIZES.xxxl,
-    fontWeight: FONT_WEIGHTS.bold,
-    color: COLORS.text,
-    textAlign: 'center',
-  },
-  message: {
-    fontSize: FONT_SIZES.lg,
-    fontWeight: FONT_WEIGHTS.regular,
-    color: COLORS.textMuted,
-    textAlign: 'center',
-    lineHeight: 22,
-    marginBottom: SPACING.sm,
-  },
-  actions: {
-    gap: SPACING.sm,
-    marginTop: SPACING.sm,
-  },
-  actionButton: {
-    width: '100%',
-  },
-});
+function createStyles(colors: ThemeColors) {
+  const cardShadow = createShadow(8, colors.shadow, 0.12, 16);
+  return StyleSheet.create({
+    overlay: {
+      flex: 1,
+      justifyContent: 'center',
+      paddingHorizontal: SPACING.lg,
+      backgroundColor: colors.imageScrim,
+    },
+    backdrop: {
+      ...StyleSheet.absoluteFill,
+    },
+    card: {
+      backgroundColor: colors.card,
+      borderRadius: BORDER_RADIUS.hero,
+      borderWidth: 1,
+      borderColor: colors.border,
+      paddingHorizontal: SPACING.lg,
+      paddingTop: SPACING.xl,
+      paddingBottom: SPACING.lg,
+      gap: SPACING.sm,
+      ...cardShadow,
+    },
+    title: {
+      fontSize: FONT_SIZES.xxxl,
+      fontWeight: FONT_WEIGHTS.bold,
+      color: colors.text,
+      textAlign: 'center',
+    },
+    message: {
+      fontSize: FONT_SIZES.lg,
+      fontWeight: FONT_WEIGHTS.regular,
+      color: colors.textMuted,
+      textAlign: 'center',
+      lineHeight: 22,
+      marginBottom: SPACING.sm,
+    },
+    actions: {
+      gap: SPACING.sm,
+      marginTop: SPACING.sm,
+    },
+    actionButton: {
+      width: '100%',
+    },
+  });
+}

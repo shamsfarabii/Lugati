@@ -10,14 +10,9 @@ import {
 } from 'react-native';
 
 import { AppIcon } from '@/components/ui/AppIcon';
-import {
-  BORDER_RADIUS,
-  COLORS,
-  FONT_SIZES,
-  FONT_WEIGHTS,
-  ICON_SIZES,
-  SPACING,
-} from '@/constants/theme';
+import { type ThemeColors, BORDER_RADIUS, FONT_SIZES, FONT_WEIGHTS, ICON_SIZES, SPACING } from '@/constants/theme';
+import { useThemedStyles } from '@/theme/useThemedStyles';
+import { useTheme } from '@/theme/useTheme';
 import { commonStyles } from '@/styles/commonStyles';
 
 type FocusHandler = NonNullable<TextInputProps['onFocus']>;
@@ -50,6 +45,9 @@ export function TextField({
   ref,
   ...inputProps
 }: TextFieldProps) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
+
   const [isFocused, setIsFocused] = useState(false);
   const hasError = Boolean(errorMessage);
   const canCount =
@@ -85,8 +83,8 @@ export function TextField({
         ref={ref}
         value={value}
         maxLength={maxLength}
-        placeholderTextColor={COLORS.textMutedSecondary}
-        selectionColor={COLORS.primary}
+        placeholderTextColor={colors.textMutedSecondary}
+        selectionColor={colors.primary}
         accessibilityLabel={label}
         onFocus={handleFocus}
         onBlur={handleBlur}
@@ -104,7 +102,7 @@ export function TextField({
           style={[commonStyles.row, commonStyles.alignCenter, styles.message]}
           accessibilityLiveRegion="polite"
         >
-          <AppIcon name="warning" size={ICON_SIZES.sm - 2} color={COLORS.danger} />
+          <AppIcon name="warning" size={ICON_SIZES.sm - 2} color={colors.danger} />
           <Text style={styles.error}>{errorMessage}</Text>
         </View>
       ) : null}
@@ -114,62 +112,64 @@ export function TextField({
   );
 }
 
-const styles = StyleSheet.create({
-  wrapper: {
-    marginBottom: SPACING.md,
-  },
-  labelRow: {
-    marginBottom: SPACING.sm - 2,
-    gap: SPACING.sm,
-  },
-  label: {
-    fontSize: FONT_SIZES.md,
-    fontWeight: FONT_WEIGHTS.semibold,
-    color: COLORS.text,
-  },
-  requiredMark: {
-    color: COLORS.danger,
-    fontWeight: FONT_WEIGHTS.bold,
-  },
-  counter: {
-    fontSize: FONT_SIZES.xs,
-    fontWeight: FONT_WEIGHTS.medium,
-    color: COLORS.textMutedSecondary,
-    fontVariant: ['tabular-nums'],
-  },
-  input: {
-    minHeight: 48,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    borderRadius: BORDER_RADIUS.lg,
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm + 2,
-    fontSize: FONT_SIZES.xl,
-    color: COLORS.text,
-    backgroundColor: COLORS.surfaceInput,
-  },
-  inputFocused: {
-    borderColor: COLORS.inputFocusBorder,
-    backgroundColor: COLORS.card,
-  },
-  inputError: {
-    borderColor: COLORS.borderDanger,
-    backgroundColor: COLORS.surfaceDanger,
-  },
-  message: {
-    marginTop: SPACING.xs + 2,
-    gap: SPACING.xs + 2,
-  },
-  error: {
-    flex: 1,
-    fontSize: FONT_SIZES.sm,
-    fontWeight: FONT_WEIGHTS.medium,
-    color: COLORS.danger,
-  },
-  hint: {
-    marginTop: SPACING.xs + 2,
-    fontSize: FONT_SIZES.sm,
-    lineHeight: 18,
-    color: COLORS.textMutedSecondary,
-  },
-});
+function createStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    wrapper: {
+      marginBottom: SPACING.md,
+    },
+    labelRow: {
+      marginBottom: SPACING.sm - 2,
+      gap: SPACING.sm,
+    },
+    label: {
+      fontSize: FONT_SIZES.md,
+      fontWeight: FONT_WEIGHTS.semibold,
+      color: colors.text,
+    },
+    requiredMark: {
+      color: colors.danger,
+      fontWeight: FONT_WEIGHTS.bold,
+    },
+    counter: {
+      fontSize: FONT_SIZES.xs,
+      fontWeight: FONT_WEIGHTS.medium,
+      color: colors.textMutedSecondary,
+      fontVariant: ['tabular-nums'],
+    },
+    input: {
+      minHeight: 48,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: BORDER_RADIUS.lg,
+      paddingHorizontal: SPACING.md,
+      paddingVertical: SPACING.sm + 2,
+      fontSize: FONT_SIZES.xl,
+      color: colors.text,
+      backgroundColor: colors.surfaceInput,
+    },
+    inputFocused: {
+      borderColor: colors.inputFocusBorder,
+      backgroundColor: colors.card,
+    },
+    inputError: {
+      borderColor: colors.borderDanger,
+      backgroundColor: colors.surfaceDanger,
+    },
+    message: {
+      marginTop: SPACING.xs + 2,
+      gap: SPACING.xs + 2,
+    },
+    error: {
+      flex: 1,
+      fontSize: FONT_SIZES.sm,
+      fontWeight: FONT_WEIGHTS.medium,
+      color: colors.danger,
+    },
+    hint: {
+      marginTop: SPACING.xs + 2,
+      fontSize: FONT_SIZES.sm,
+      lineHeight: 18,
+      color: colors.textMutedSecondary,
+    },
+  });
+}

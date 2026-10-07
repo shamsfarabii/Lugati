@@ -3,7 +3,8 @@ import { StyleSheet, View } from 'react-native';
 
 import { ActionCard } from '@/components/home/ActionCard';
 import type { HomeReviewCard } from '@/components/home/buildHomeView';
-import { COLORS, FONT_SIZES, FONT_WEIGHTS, SPACING } from '@/constants/theme';
+import { type ThemeColors, FONT_SIZES, FONT_WEIGHTS, SPACING } from '@/constants/theme';
+import { useThemedStyles } from '@/theme/useThemedStyles';
 
 const REVIEW_ICON = require('../../../assets/icons/review.svg') as number;
 const QUIZ_ICON = require('../../../assets/icons/quiz.svg') as number;
@@ -15,6 +16,8 @@ type PracticeSectionProps = {
 };
 
 export function PracticeSection({ isWide, review, quizDescription }: PracticeSectionProps) {
+  const styles = useThemedStyles(createStyles);
+
   const handleDailyReview = () => {
     if (review.sessionId) {
       router.push({
@@ -56,19 +59,21 @@ export function PracticeSection({ isWide, review, quizDescription }: PracticeSec
   );
 }
 
-const styles = StyleSheet.create({
-  sectionTitle: {
-    fontSize: FONT_SIZES.xxl,
-    fontWeight: FONT_WEIGHTS.bold,
-    color: COLORS.text,
-    marginBottom: SPACING.sm + SPACING.xs,
-  },
-  actions: {
-    gap: SPACING.md,
-    marginBottom: SPACING.xxl,
-  },
-  actionsWide: {
-    flexDirection: 'row',
-    alignItems: 'stretch',
-  },
-});
+function createStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    sectionTitle: {
+      fontSize: FONT_SIZES.xxl,
+      fontWeight: FONT_WEIGHTS.bold,
+      color: colors.text,
+      marginBottom: SPACING.sm + SPACING.xs,
+    },
+    actions: {
+      gap: SPACING.md,
+      marginBottom: SPACING.xxl,
+    },
+    actionsWide: {
+      flexDirection: 'row',
+      alignItems: 'stretch',
+    },
+  });
+}

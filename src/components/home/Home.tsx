@@ -14,9 +14,12 @@ import { PracticeSection } from '@/components/home/PracticeSection';
 import { RecentWordsSection } from '@/components/home/RecentWordsSection';
 import { useHomeSummary } from '@/components/home/useHomeSummary';
 import { VocabularyHeroCard } from '@/components/home/VocabularyHeroCard';
-import { COLORS, SPACING } from '@/constants/theme';
+import { type ThemeColors, SPACING } from '@/constants/theme';
+import { useThemedStyles } from '@/theme/useThemedStyles';
 
 export function Home() {
+  const styles = useThemedStyles(createStyles);
+
   const { summary, isLoading } = useHomeSummary();
   const { width } = useWindowDimensions();
   const view = buildHomeView(summary, isLoading);
@@ -61,30 +64,32 @@ export function Home() {
   );
 }
 
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-  },
-  scroll: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    paddingHorizontal: SPACING.lg,
-    paddingTop: SPACING.md,
-    paddingBottom: SPACING.section + SPACING.md,
-  },
-  scrollContentCompact: {
-    paddingHorizontal: SPACING.md,
-  },
-  scrollContentWide: {
-    paddingHorizontal: SPACING.section,
-    paddingTop: SPACING.xl,
-  },
-  content: {
-    width: '100%',
-    maxWidth: HOME_CONTENT_MAX_WIDTH,
-    alignSelf: 'center',
-  },
-});
+function createStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    safeArea: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    scroll: {
+      flex: 1,
+    },
+    scrollContent: {
+      flexGrow: 1,
+      paddingHorizontal: SPACING.lg,
+      paddingTop: SPACING.md,
+      paddingBottom: SPACING.section + SPACING.md,
+    },
+    scrollContentCompact: {
+      paddingHorizontal: SPACING.md,
+    },
+    scrollContentWide: {
+      paddingHorizontal: SPACING.section,
+      paddingTop: SPACING.xl,
+    },
+    content: {
+      width: '100%',
+      maxWidth: HOME_CONTENT_MAX_WIDTH,
+      alignSelf: 'center',
+    },
+  });
+}

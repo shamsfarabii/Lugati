@@ -1,8 +1,8 @@
 import { router } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { AppIcon } from '@/components/ui/AppIcon';
+import { AppIcon, type AppIconName } from '@/components/ui/AppIcon';
 import { FormSection } from '@/components/ui/FormSection';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
@@ -12,22 +12,36 @@ import {
   LATEST_APK_DOWNLOAD_URL,
 } from '@/constants/appLinks';
 import {
+  type AppearancePreference,
+  type ThemeColors,
   BORDER_RADIUS,
-  COLORS,
   FONT_SIZES,
   FONT_WEIGHTS,
   ICON_SIZES,
   SPACING,
 } from '@/constants/theme';
+import { useThemedStyles } from '@/theme/useThemedStyles';
+import { useTheme } from '@/theme/useTheme';
 import { resetUserProgress } from '@/features/settings/services/settingsService';
 import { createShadow } from '@/helpers/styleHelpers';
 import { commonStyles } from '@/styles/commonStyles';
 import { appAlert } from '@/utils/appAlert';
 import { openExternalUrl } from '@/utils/openExternalUrl';
 
-const cardShadow = createShadow(2, COLORS.accent, 0.06, 10, { width: 0, height: 4 });
+const APPEARANCE_OPTIONS: {
+  value: AppearancePreference;
+  label: string;
+  icon: AppIconName;
+}[] = [
+  { value: 'system', label: 'System', icon: 'circleLefthalfFilled' },
+  { value: 'light', label: 'Light', icon: 'sun' },
+  { value: 'dark', label: 'Dark', icon: 'moon' },
+];
 
 export function SettingsScreen() {
+  const { colors, appearancePreference, setAppearancePreference } = useTheme();
+  const styles = useThemedStyles(createStyles);
+
   const [isResetting, setIsResetting] = useState(false);
 
   const runReset = useCallback(async () => {
@@ -89,14 +103,61 @@ export function SettingsScreen() {
     <ScreenScaffold>
       <ScreenHeader title="Settings" onBack={() => router.back()} />
 
+      <FormSection title="Appearance" hint="Match your device or choose a fixed theme.">
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Color theme</Text>
+          <Text style={styles.cardBody}>
+            System follows your phone or computer setting. Light and dark stay fixed until you
+            change them.
+          </Text>
+          <View style={styles.appearanceRow} accessibilityRole="radiogroup">
+            {APPEARANCE_OPTIONS.map((option) => {
+              const isSelected = appearancePreference === option.value;
+
+              return (
+                <Pressable
+                  key={option.value}
+                  onPress={() => {
+                    void setAppearancePreference(option.value);
+                  }}
+                  accessibilityRole="radio"
+                  accessibilityState={{ selected: isSelected }}
+                  accessibilityLabel={option.label}
+                  style={({ pressed }) => [
+                    styles.appearanceOption,
+                    isSelected && styles.appearanceOptionSelected,
+                    pressed && styles.appearanceOptionPressed,
+                  ]}
+                >
+                  <AppIcon
+                    name={option.icon}
+                    size={ICON_SIZES.md}
+                    color={isSelected ? colors.primary : colors.textMuted}
+                  />
+                  <Text
+                    style={[
+                      styles.appearanceLabel,
+                      isSelected && styles.appearanceLabelSelected,
+                    ]}
+                  >
+                    {option.label}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
+        </View>
+      </FormSection>
+
       <FormSection
         title="Android app"
+        style={styles.sectionSpacing}
         hint="Install or update Lugati outside the Play Store."
       >
         <View style={styles.card}>
           <View style={[commonStyles.row, styles.cardHeader]}>
             <View style={[commonStyles.centered, styles.iconChipDownload]}>
-              <AppIcon name="importDoc" size={ICON_SIZES.md} color={COLORS.primary} />
+              <AppIcon name="importDoc" size={ICON_SIZES.md} color={colors.primary} />
             </View>
             <View style={commonStyles.grow}>
               <Text style={styles.cardTitle}>Latest APK on GitHub</Text>
@@ -119,7 +180,7 @@ export function SettingsScreen() {
           <PrimaryButton
             label="Download latest APK"
             variant="secondary"
-            leading={<AppIcon name="importDoc" size={ICON_SIZES.sm} color={COLORS.primary} />}
+            leading={<AppIcon name="importDoc" size={ICON_SIZES.sm} color={colors.primary} />}
             onPress={() => {
               void openLatestApkDownload();
             }}
@@ -140,12 +201,12 @@ export function SettingsScreen() {
       <FormSection
         title="Learning data"
         hint="Use this if you want a fresh start without deleting your words."
-        style={{marginTop: SPACING.lg}}
+        style={styles.sectionSpacing}
       >
         <View style={styles.card}>
           <View style={[commonStyles.row, styles.cardHeader]}>
             <View style={[commonStyles.centered, styles.iconChip]}>
-              <AppIcon name="refresh" size={ICON_SIZES.md} color={COLORS.danger} />
+              <AppIcon name="refresh" size={ICON_SIZES.md} color={colors.danger} />
             </View>
             <View style={commonStyles.grow}>
               <Text style={styles.cardTitle}>Reset all progress</Text>
@@ -170,52 +231,92 @@ export function SettingsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  card: {
-    gap: SPACING.lg,
-    padding: SPACING.lg,
-    borderRadius: BORDER_RADIUS.card,
-    backgroundColor: COLORS.card,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    ...cardShadow,
-  },
-  cardHeader: {
-    gap: SPACING.md,
-    alignItems: 'flex-start',
-  },
-  iconChip: {
-    width: 40,
-    height: 40,
-    borderRadius: BORDER_RADIUS.md,
-    backgroundColor: COLORS.surfaceDanger,
-    borderWidth: 1,
-    borderColor: COLORS.borderDanger,
-  },
-  iconChipDownload: {
-    width: 40,
-    height: 40,
-    borderRadius: BORDER_RADIUS.md,
-    backgroundColor: COLORS.surfaceMuted,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-  },
-  linkText: {
-    marginTop: SPACING.sm,
-    fontSize: FONT_SIZES.sm,
-    lineHeight: 18,
-    color: COLORS.primary,
-    textDecorationLine: 'underline',
-  },
-  cardTitle: {
-    fontSize: FONT_SIZES.xl,
-    fontWeight: FONT_WEIGHTS.bold,
-    color: COLORS.text,
-  },
-  cardBody: {
-    marginTop: SPACING.xs,
-    fontSize: FONT_SIZES.md,
-    lineHeight: 20,
-    color: COLORS.textMuted,
-  },
-});
+function createStyles(colors: ThemeColors) {
+  const cardShadow = createShadow(2, colors.shadow, 0.06, 10, { width: 0, height: 4 });
+  return StyleSheet.create({
+    sectionSpacing: {
+      marginTop: SPACING.lg,
+    },
+    card: {
+      gap: SPACING.lg,
+      padding: SPACING.lg,
+      borderRadius: BORDER_RADIUS.card,
+      backgroundColor: colors.card,
+      borderWidth: 1,
+      borderColor: colors.border,
+      ...cardShadow,
+    },
+    cardHeader: {
+      gap: SPACING.md,
+      alignItems: 'flex-start',
+    },
+    iconChip: {
+      width: 40,
+      height: 40,
+      borderRadius: BORDER_RADIUS.md,
+      backgroundColor: colors.surfaceDanger,
+      borderWidth: 1,
+      borderColor: colors.borderDanger,
+    },
+    iconChipDownload: {
+      width: 40,
+      height: 40,
+      borderRadius: BORDER_RADIUS.md,
+      backgroundColor: colors.surfaceMuted,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    linkText: {
+      marginTop: SPACING.sm,
+      fontSize: FONT_SIZES.sm,
+      lineHeight: 18,
+      color: colors.primary,
+      textDecorationLine: 'underline',
+    },
+    cardTitle: {
+      fontSize: FONT_SIZES.xl,
+      fontWeight: FONT_WEIGHTS.bold,
+      color: colors.text,
+    },
+    cardBody: {
+      marginTop: SPACING.xs,
+      fontSize: FONT_SIZES.md,
+      lineHeight: 20,
+      color: colors.textMuted,
+    },
+    appearanceRow: {
+      flexDirection: 'row',
+      gap: SPACING.sm,
+      marginTop: SPACING.sm,
+    },
+    appearanceOption: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: SPACING.xs,
+      minHeight: 72,
+      paddingVertical: SPACING.sm,
+      paddingHorizontal: SPACING.xs,
+      borderRadius: BORDER_RADIUS.lg,
+      borderWidth: 1,
+      borderColor: colors.border,
+      backgroundColor: colors.surfaceMuted,
+    },
+    appearanceOptionSelected: {
+      borderColor: colors.primary,
+      backgroundColor: colors.surfaceSuccess,
+    },
+    appearanceOptionPressed: {
+      opacity: 0.88,
+    },
+    appearanceLabel: {
+      fontSize: FONT_SIZES.sm,
+      fontWeight: FONT_WEIGHTS.semibold,
+      color: colors.textMuted,
+    },
+    appearanceLabelSelected: {
+      color: colors.primary,
+      fontWeight: FONT_WEIGHTS.bold,
+    },
+  });
+}

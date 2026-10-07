@@ -6,15 +6,9 @@ import { AppIcon, type AppIconName } from '@/components/ui/AppIcon';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { ScreenScaffold } from '@/components/ui/ScreenScaffold';
-import {
-  BORDER_RADIUS,
-  COLORS,
-  FONT_SIZES,
-  FONT_WEIGHTS,
-  ICON_SIZES,
-  SIZES,
-  SPACING,
-} from '@/constants/theme';
+import { type ThemeColors, BORDER_RADIUS, FONT_SIZES, FONT_WEIGHTS, ICON_SIZES, SIZES, SPACING } from '@/constants/theme';
+import { useThemedStyles } from '@/theme/useThemedStyles';
+import { useTheme } from '@/theme/useTheme';
 import { MAX_VOCABULARY_EXAMPLES } from '@/features/vocabulary/constants';
 import type { Vocabulary } from '@/features/vocabulary/types';
 import { createShadow } from '@/helpers/styleHelpers';
@@ -25,9 +19,6 @@ type VocabularyDetailScreenProps = {
   onBack: () => void;
   onEdit: () => void;
 };
-
-const cardShadow = createShadow(2, COLORS.accent, 0.06, 4);
-const heroShadow = createShadow(6, COLORS.accent, 0.18, 12);
 
 function formatDate(isoDate: string): string {
   const date = new Date(isoDate);
@@ -49,10 +40,13 @@ type SectionProps = {
 };
 
 function Section({ icon, title, count, children }: SectionProps) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
+
   return (
     <View style={styles.section}>
       <View style={[commonStyles.row, commonStyles.alignCenter, styles.sectionHeader]}>
-        <AppIcon name={icon} size={ICON_SIZES.sm - 2} color={COLORS.textMuted} weight="semibold" />
+        <AppIcon name={icon} size={ICON_SIZES.sm - 2} color={colors.textMuted} weight="semibold" />
         <Text style={styles.sectionTitle} accessibilityRole="header">
           {title}
         </Text>
@@ -68,6 +62,9 @@ export function VocabularyDetailScreen({
   onBack,
   onEdit,
 }: VocabularyDetailScreenProps) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
+
   const displayExamples = vocabulary.examples.slice(0, MAX_VOCABULARY_EXAMPLES);
   const hasExamples = displayExamples.length > 0;
   const hasDescription = Boolean(vocabulary.description?.trim());
@@ -93,7 +90,7 @@ export function VocabularyDetailScreen({
             accessibilityRole="button"
             accessibilityLabel="Edit vocabulary"
           >
-            <AppIcon name="pencil" size={ICON_SIZES.md} color={COLORS.primary} weight="bold" />
+            <AppIcon name="pencil" size={ICON_SIZES.md} color={colors.primary} weight="bold" />
           </Pressable>
         }
       />
@@ -113,7 +110,7 @@ export function VocabularyDetailScreen({
             <AppIcon
               name="calendar"
               size={ICON_SIZES.sm - 4}
-              color={COLORS.textOnDarkCardMuted}
+              color={colors.textOnDarkCardMuted}
               weight="semibold"
             />
             <Text style={styles.heroMeta}>
@@ -178,7 +175,7 @@ export function VocabularyDetailScreen({
       {!hasExamples && !hasDescription && !hasImage ? (
         <View style={styles.emptyCard}>
           <View style={[styles.emptyIcon, commonStyles.centered]}>
-            <AppIcon name="notes" size={ICON_SIZES.xl} color={COLORS.primary} />
+            <AppIcon name="notes" size={ICON_SIZES.xl} color={colors.primary} />
           </View>
           <Text style={styles.emptyTitle}>Make it memorable</Text>
           <Text style={styles.emptyBody}>
@@ -189,7 +186,7 @@ export function VocabularyDetailScreen({
             variant="secondary"
             onPress={onEdit}
             leading={
-              <AppIcon name="plus" size={ICON_SIZES.md} color={COLORS.primary} weight="bold" />
+              <AppIcon name="plus" size={ICON_SIZES.md} color={colors.primary} weight="bold" />
             }
             style={styles.emptyButton}
           />
@@ -199,203 +196,207 @@ export function VocabularyDetailScreen({
   );
 }
 
-const styles = StyleSheet.create({
-  scaffoldContent: {
-    paddingBottom: SPACING.section,
-  },
-  editHeaderButton: {
-    width: SIZES.headerIconButton,
-    height: SIZES.headerIconButton,
-    borderRadius: BORDER_RADIUS.sm,
-    backgroundColor: COLORS.card,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-  },
-  editHeaderPressed: {
-    backgroundColor: COLORS.surfacePressed,
-  },
-  heroCard: {
-    paddingHorizontal: SPACING.lg,
-    paddingTop: SPACING.xl + 4,
-    paddingBottom: SPACING.lg,
-    marginBottom: SPACING.xl,
-    borderRadius: BORDER_RADIUS.hero,
-    backgroundColor: COLORS.primaryDark,
-    alignItems: 'center',
-    overflow: 'hidden',
-    ...heroShadow,
-  },
-  heroDecoration: {
-    position: 'absolute',
-    top: -60,
-    right: -50,
-    width: 180,
-    height: 180,
-    borderRadius: BORDER_RADIUS.round,
-    backgroundColor: COLORS.decorationOverlay,
-  },
-  heroDecorationSmall: {
-    top: undefined,
-    right: undefined,
-    bottom: -40,
-    left: -30,
-    width: 110,
-    height: 110,
-  },
-  heroArabic: {
-    fontSize: FONT_SIZES.stat - 4,
-    lineHeight: 60,
-    fontWeight: FONT_WEIGHTS.bold,
-    color: COLORS.textOnPrimary,
-    textAlign: 'center',
-    writingDirection: 'rtl',
-  },
-  heroDivider: {
-    width: 36,
-    height: 2,
-    marginVertical: SPACING.md - 4,
-    borderRadius: 1,
-    backgroundColor: COLORS.textOnDarkCardMuted,
-    opacity: 0.4,
-  },
-  heroMeaning: {
-    fontSize: FONT_SIZES.xxxl,
-    lineHeight: 26,
-    fontWeight: FONT_WEIGHTS.semibold,
-    color: COLORS.textOnDarkCard,
-    textAlign: 'center',
-  },
-  heroMetaRow: {
-    marginTop: SPACING.lg,
-    gap: SPACING.xs + 2,
-  },
-  heroMeta: {
-    fontSize: FONT_SIZES.xs,
-    fontWeight: FONT_WEIGHTS.medium,
-    color: COLORS.textOnDarkCardMuted,
-    fontVariant: ['tabular-nums'],
-  },
-  section: {
-    marginBottom: SPACING.xl,
-  },
-  sectionHeader: {
-    marginBottom: SPACING.sm + 2,
-    paddingHorizontal: SPACING.xs,
-    gap: SPACING.xs + 2,
-  },
-  sectionTitle: {
-    fontSize: FONT_SIZES.xs,
-    fontWeight: FONT_WEIGHTS.bold,
-    color: COLORS.textMuted,
-    letterSpacing: 0.8,
-    textTransform: 'uppercase',
-  },
-  sectionCount: {
-    minWidth: 20,
-    paddingHorizontal: 6,
-    paddingVertical: 1,
-    borderRadius: BORDER_RADIUS.round,
-    overflow: 'hidden',
-    backgroundColor: COLORS.surfaceMuted,
-    fontSize: FONT_SIZES.xs - 1,
-    fontWeight: FONT_WEIGHTS.bold,
-    color: COLORS.primary,
-    textAlign: 'center',
-  },
-  card: {
-    borderRadius: BORDER_RADIUS.xxl,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    backgroundColor: COLORS.card,
-    overflow: 'hidden',
-    ...cardShadow,
-  },
-  image: {
-    width: '100%',
-    aspectRatio: 16 / 10,
-    backgroundColor: COLORS.surfaceMuted,
-  },
-  exampleRow: {
-    alignItems: 'flex-start',
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.md,
-    gap: SPACING.md - 4,
-  },
-  exampleRowBorder: {
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.borderLight,
-  },
-  exampleBadge: {
-    width: SIZES.stepBadge,
-    height: SIZES.stepBadge,
-    marginTop: 2,
-    borderRadius: BORDER_RADIUS.round,
-    backgroundColor: COLORS.surfaceWordIcon,
-  },
-  exampleBadgeText: {
-    fontSize: FONT_SIZES.xs,
-    fontWeight: FONT_WEIGHTS.bold,
-    color: COLORS.wordIconText,
-    fontVariant: ['tabular-nums'],
-  },
-  exampleContent: {
-    flex: 1,
-    minWidth: 0,
-    gap: SPACING.xs + 2,
-  },
-  exampleSentence: {
-    fontSize: FONT_SIZES.xxxl,
-    fontWeight: FONT_WEIGHTS.semibold,
-    color: COLORS.arabicWord,
-    textAlign: 'right',
-    writingDirection: 'rtl',
-    lineHeight: 32,
-  },
-  exampleMeaning: {
-    fontSize: FONT_SIZES.md,
-    color: COLORS.textMutedSecondary,
-    lineHeight: 20,
-  },
-  notesCard: {
-    padding: SPACING.md,
-  },
-  notesText: {
-    fontSize: FONT_SIZES.lg,
-    color: COLORS.text,
-    lineHeight: 23,
-  },
-  emptyCard: {
-    alignItems: 'center',
-    paddingHorizontal: SPACING.lg,
-    paddingVertical: SPACING.xl,
-    borderRadius: BORDER_RADIUS.xxl,
-    borderWidth: 1,
-    borderStyle: 'dashed',
-    borderColor: COLORS.addButtonBorder,
-    backgroundColor: COLORS.surfaceAddButton,
-  },
-  emptyIcon: {
-    width: 48,
-    height: 48,
-    marginBottom: SPACING.sm + 4,
-    borderRadius: BORDER_RADIUS.lg,
-    backgroundColor: COLORS.card,
-  },
-  emptyTitle: {
-    fontSize: FONT_SIZES.xxl,
-    fontWeight: FONT_WEIGHTS.bold,
-    color: COLORS.text,
-    marginBottom: SPACING.xs,
-  },
-  emptyBody: {
-    maxWidth: 280,
-    fontSize: FONT_SIZES.md,
-    lineHeight: 20,
-    color: COLORS.textMuted,
-    textAlign: 'center',
-  },
-  emptyButton: {
-    marginTop: SPACING.lg,
-    alignSelf: 'stretch',
-  },
-});
+function createStyles(colors: ThemeColors) {
+  const cardShadow = createShadow(2, colors.shadow, 0.06, 4);
+  const heroShadow = createShadow(6, colors.shadow, 0.18, 12);
+  return StyleSheet.create({
+    scaffoldContent: {
+      paddingBottom: SPACING.section,
+    },
+    editHeaderButton: {
+      width: SIZES.headerIconButton,
+      height: SIZES.headerIconButton,
+      borderRadius: BORDER_RADIUS.sm,
+      backgroundColor: colors.card,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    editHeaderPressed: {
+      backgroundColor: colors.surfacePressed,
+    },
+    heroCard: {
+      paddingHorizontal: SPACING.lg,
+      paddingTop: SPACING.xl + 4,
+      paddingBottom: SPACING.lg,
+      marginBottom: SPACING.xl,
+      borderRadius: BORDER_RADIUS.hero,
+      backgroundColor: colors.primaryDark,
+      alignItems: 'center',
+      overflow: 'hidden',
+      ...heroShadow,
+    },
+    heroDecoration: {
+      position: 'absolute',
+      top: -60,
+      right: -50,
+      width: 180,
+      height: 180,
+      borderRadius: BORDER_RADIUS.round,
+      backgroundColor: colors.decorationOverlay,
+    },
+    heroDecorationSmall: {
+      top: undefined,
+      right: undefined,
+      bottom: -40,
+      left: -30,
+      width: 110,
+      height: 110,
+    },
+    heroArabic: {
+      fontSize: FONT_SIZES.stat - 4,
+      lineHeight: 60,
+      fontWeight: FONT_WEIGHTS.bold,
+      color: colors.textOnPrimary,
+      textAlign: 'center',
+      writingDirection: 'rtl',
+    },
+    heroDivider: {
+      width: 36,
+      height: 2,
+      marginVertical: SPACING.md - 4,
+      borderRadius: 1,
+      backgroundColor: colors.textOnDarkCardMuted,
+      opacity: 0.4,
+    },
+    heroMeaning: {
+      fontSize: FONT_SIZES.xxxl,
+      lineHeight: 26,
+      fontWeight: FONT_WEIGHTS.semibold,
+      color: colors.textOnDarkCard,
+      textAlign: 'center',
+    },
+    heroMetaRow: {
+      marginTop: SPACING.lg,
+      gap: SPACING.xs + 2,
+    },
+    heroMeta: {
+      fontSize: FONT_SIZES.xs,
+      fontWeight: FONT_WEIGHTS.medium,
+      color: colors.textOnDarkCardMuted,
+      fontVariant: ['tabular-nums'],
+    },
+    section: {
+      marginBottom: SPACING.xl,
+    },
+    sectionHeader: {
+      marginBottom: SPACING.sm + 2,
+      paddingHorizontal: SPACING.xs,
+      gap: SPACING.xs + 2,
+    },
+    sectionTitle: {
+      fontSize: FONT_SIZES.xs,
+      fontWeight: FONT_WEIGHTS.bold,
+      color: colors.textMuted,
+      letterSpacing: 0.8,
+      textTransform: 'uppercase',
+    },
+    sectionCount: {
+      minWidth: 20,
+      paddingHorizontal: 6,
+      paddingVertical: 1,
+      borderRadius: BORDER_RADIUS.round,
+      overflow: 'hidden',
+      backgroundColor: colors.surfaceMuted,
+      fontSize: FONT_SIZES.xs - 1,
+      fontWeight: FONT_WEIGHTS.bold,
+      color: colors.primary,
+      textAlign: 'center',
+    },
+    card: {
+      borderRadius: BORDER_RADIUS.xxl,
+      borderWidth: 1,
+      borderColor: colors.border,
+      backgroundColor: colors.card,
+      overflow: 'hidden',
+      ...cardShadow,
+    },
+    image: {
+      width: '100%',
+      aspectRatio: 16 / 10,
+      backgroundColor: colors.surfaceMuted,
+    },
+    exampleRow: {
+      alignItems: 'flex-start',
+      paddingHorizontal: SPACING.md,
+      paddingVertical: SPACING.md,
+      gap: SPACING.md - 4,
+    },
+    exampleRowBorder: {
+      borderBottomWidth: 1,
+      borderBottomColor: colors.borderLight,
+    },
+    exampleBadge: {
+      width: SIZES.stepBadge,
+      height: SIZES.stepBadge,
+      marginTop: 2,
+      borderRadius: BORDER_RADIUS.round,
+      backgroundColor: colors.surfaceWordIcon,
+    },
+    exampleBadgeText: {
+      fontSize: FONT_SIZES.xs,
+      fontWeight: FONT_WEIGHTS.bold,
+      color: colors.wordIconText,
+      fontVariant: ['tabular-nums'],
+    },
+    exampleContent: {
+      flex: 1,
+      minWidth: 0,
+      gap: SPACING.xs + 2,
+    },
+    exampleSentence: {
+      fontSize: FONT_SIZES.xxxl,
+      fontWeight: FONT_WEIGHTS.semibold,
+      color: colors.arabicWord,
+      textAlign: 'right',
+      writingDirection: 'rtl',
+      lineHeight: 32,
+    },
+    exampleMeaning: {
+      fontSize: FONT_SIZES.md,
+      color: colors.textMutedSecondary,
+      lineHeight: 20,
+    },
+    notesCard: {
+      padding: SPACING.md,
+    },
+    notesText: {
+      fontSize: FONT_SIZES.lg,
+      color: colors.text,
+      lineHeight: 23,
+    },
+    emptyCard: {
+      alignItems: 'center',
+      paddingHorizontal: SPACING.lg,
+      paddingVertical: SPACING.xl,
+      borderRadius: BORDER_RADIUS.xxl,
+      borderWidth: 1,
+      borderStyle: 'dashed',
+      borderColor: colors.addButtonBorder,
+      backgroundColor: colors.surfaceAddButton,
+    },
+    emptyIcon: {
+      width: 48,
+      height: 48,
+      marginBottom: SPACING.sm + 4,
+      borderRadius: BORDER_RADIUS.lg,
+      backgroundColor: colors.card,
+    },
+    emptyTitle: {
+      fontSize: FONT_SIZES.xxl,
+      fontWeight: FONT_WEIGHTS.bold,
+      color: colors.text,
+      marginBottom: SPACING.xs,
+    },
+    emptyBody: {
+      maxWidth: 280,
+      fontSize: FONT_SIZES.md,
+      lineHeight: 20,
+      color: colors.textMuted,
+      textAlign: 'center',
+    },
+    emptyButton: {
+      marginTop: SPACING.lg,
+      alignSelf: 'stretch',
+    },
+  });
+}

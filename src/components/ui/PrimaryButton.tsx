@@ -8,14 +8,9 @@ import {
   type ViewStyle,
 } from 'react-native';
 
-import {
-  BORDER_RADIUS,
-  COLORS,
-  FONT_SIZES,
-  FONT_WEIGHTS,
-  SIZES,
-  SPACING,
-} from '@/constants/theme';
+import { type ThemeColors, BORDER_RADIUS, FONT_SIZES, FONT_WEIGHTS, SIZES, SPACING } from '@/constants/theme';
+import { useThemedStyles } from '@/theme/useThemedStyles';
+import { useTheme } from '@/theme/useTheme';
 import { commonStyles } from '@/styles/commonStyles';
 
 type PrimaryButtonProps = {
@@ -44,8 +39,11 @@ export function PrimaryButton({
   accessibilityLabel,
   accessibilityHint,
 }: PrimaryButtonProps) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
+
   const isBlocked = disabled || loading;
-  const spinnerColor = variant === 'primary' ? COLORS.textOnPrimary : COLORS.primary;
+  const spinnerColor = variant === 'primary' ? colors.textOnPrimary : colors.primary;
 
   return (
     <Pressable
@@ -87,42 +85,44 @@ export function PrimaryButton({
   );
 }
 
-const styles = StyleSheet.create({
-  base: {
-    minHeight: SIZES.primaryButtonHeight,
-    paddingHorizontal: 18,
-    borderRadius: BORDER_RADIUS.lg,
-    gap: SPACING.sm,
-  },
-  primary: {
-    backgroundColor: COLORS.primary,
-  },
-  secondary: {
-    backgroundColor: COLORS.surfaceMuted,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-  },
-  danger: {
-    backgroundColor: COLORS.surfaceDanger,
-    borderWidth: 1,
-    borderColor: COLORS.borderDanger,
-  },
-  disabled: {
-    opacity: 0.5,
-  },
-  pressed: {
-    opacity: 0.85,
-    transform: [{ scale: 0.99 }],
-  },
-  label: {
-    fontSize: FONT_SIZES.xl,
-    fontWeight: FONT_WEIGHTS.bold,
-    color: COLORS.textOnPrimary,
-  },
-  secondaryLabel: {
-    color: COLORS.primary,
-  },
-  dangerLabel: {
-    color: COLORS.danger,
-  },
-});
+function createStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    base: {
+      minHeight: SIZES.primaryButtonHeight,
+      paddingHorizontal: 18,
+      borderRadius: BORDER_RADIUS.lg,
+      gap: SPACING.sm,
+    },
+    primary: {
+      backgroundColor: colors.primary,
+    },
+    secondary: {
+      backgroundColor: colors.surfaceMuted,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    danger: {
+      backgroundColor: colors.surfaceDanger,
+      borderWidth: 1,
+      borderColor: colors.borderDanger,
+    },
+    disabled: {
+      opacity: 0.5,
+    },
+    pressed: {
+      opacity: 0.85,
+      transform: [{ scale: 0.99 }],
+    },
+    label: {
+      fontSize: FONT_SIZES.xl,
+      fontWeight: FONT_WEIGHTS.bold,
+      color: colors.textOnPrimary,
+    },
+    secondaryLabel: {
+      color: colors.primary,
+    },
+    dangerLabel: {
+      color: colors.danger,
+    },
+  });
+}

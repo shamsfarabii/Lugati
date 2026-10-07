@@ -4,13 +4,9 @@ import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-nati
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { ScreenScaffold } from '@/components/ui/ScreenScaffold';
-import {
-  BORDER_RADIUS,
-  COLORS,
-  FONT_SIZES,
-  FONT_WEIGHTS,
-  SPACING,
-} from '@/constants/theme';
+import { type ThemeColors, BORDER_RADIUS, FONT_SIZES, FONT_WEIGHTS, SPACING } from '@/constants/theme';
+import { useThemedStyles } from '@/theme/useThemedStyles';
+import { useTheme } from '@/theme/useTheme';
 import { QuizOptionButton } from '@/features/quiz/components/QuizOptionButton';
 import { QuizProgress } from '@/features/quiz/components/QuizProgress';
 import { QuizResultView } from '@/features/quiz/components/QuizResultView';
@@ -29,6 +25,9 @@ type QuizSessionScreenProps = {
 };
 
 export function QuizSessionScreen({ questionCount }: QuizSessionScreenProps) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
+
   const quiz = useQuiz(questionCount);
 
   const {
@@ -100,7 +99,7 @@ export function QuizSessionScreen({ questionCount }: QuizSessionScreenProps) {
 
       {quiz.status === 'loading' || quiz.status === 'idle' ? (
         <View style={[commonStyles.grow, commonStyles.centered]}>
-          <ActivityIndicator color={COLORS.primary} />
+          <ActivityIndicator color={colors.primary} />
           <Text style={styles.loadingText}>Building your quiz…</Text>
         </View>
       ) : null}
@@ -134,7 +133,7 @@ export function QuizSessionScreen({ questionCount }: QuizSessionScreenProps) {
             isRunning={revealedAnswer === null}
           />
 
-          <View style={[styles.promptCard, commonStyles.centered, cardShadow]}>
+          <View style={[styles.promptCard, commonStyles.centered]}>
             <Text style={styles.prompt}>What does this word mean?</Text>
             <Text style={styles.arabicWord}>{currentQuestion.promptWord}</Text>
           </View>
@@ -201,103 +200,105 @@ export function QuizSessionScreen({ questionCount }: QuizSessionScreenProps) {
   );
 }
 
-const cardShadow = createShadow(2, COLORS.accent, 0.06, 4);
-
-const styles = StyleSheet.create({
-  loadingText: {
-    marginTop: SPACING.sm,
-    fontSize: FONT_SIZES.md,
-    color: COLORS.textMuted,
-  },
-  promptCard: {
-    paddingVertical: SPACING.xl,
-    paddingHorizontal: SPACING.lg,
-    borderRadius: BORDER_RADIUS.card,
-    backgroundColor: COLORS.card,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    marginBottom: SPACING.lg,
-  },
-  prompt: {
-    fontSize: FONT_SIZES.md,
-    color: COLORS.textMuted,
-    marginBottom: SPACING.sm,
-  },
-  arabicWord: {
-    fontSize: 40,
-    lineHeight: 58,
-    fontWeight: FONT_WEIGHTS.extraBold,
-    color: COLORS.arabicWord,
-    textAlign: 'center',
-  },
-  options: {
-    gap: SPACING.sm,
-    marginBottom: SPACING.md,
-  },
-  feedback: {
-    padding: SPACING.md,
-    borderRadius: BORDER_RADIUS.lg,
-    borderWidth: 1,
-    marginBottom: SPACING.md,
-  },
-  feedbackCorrect: {
-    borderColor: COLORS.borderSuccess,
-    backgroundColor: COLORS.surfaceSuccess,
-  },
-  feedbackWrong: {
-    borderColor: COLORS.borderDanger,
-    backgroundColor: COLORS.surfaceDanger,
-  },
-  feedbackTitle: {
-    fontSize: FONT_SIZES.xl,
-    fontWeight: FONT_WEIGHTS.bold,
-  },
-  feedbackTitleCorrect: {
-    color: COLORS.primaryLight,
-  },
-  feedbackTitleWrong: {
-    color: COLORS.danger,
-  },
-  feedbackBody: {
-    marginTop: SPACING.xs,
-    fontSize: FONT_SIZES.md,
-    color: COLORS.text,
-  },
-  errorBanner: {
-    padding: SPACING.md,
-    borderRadius: BORDER_RADIUS.lg,
-    borderWidth: 1,
-    borderColor: COLORS.borderDanger,
-    backgroundColor: COLORS.surfaceDanger,
-    marginBottom: SPACING.md,
-    gap: SPACING.xs,
-  },
-  errorText: {
-    fontSize: FONT_SIZES.md,
-    color: COLORS.danger,
-  },
-  retryLink: {
-    fontSize: FONT_SIZES.md,
-    fontWeight: FONT_WEIGHTS.semibold,
-    color: COLORS.primary,
-  },
-  state: {
-    paddingHorizontal: SPACING.lg,
-  },
-  stateTitle: {
-    fontSize: FONT_SIZES.xxl,
-    fontWeight: FONT_WEIGHTS.bold,
-    color: COLORS.text,
-    marginBottom: SPACING.xs,
-    textAlign: 'center',
-  },
-  stateBody: {
-    fontSize: FONT_SIZES.md,
-    color: COLORS.textMuted,
-    textAlign: 'center',
-  },
-  stateButton: {
-    alignSelf: 'stretch',
-    marginTop: SPACING.md,
-  },
-});
+function createStyles(colors: ThemeColors) {
+  const cardShadow = createShadow(2, colors.shadow, 0.06, 4);
+  return StyleSheet.create({
+    loadingText: {
+      marginTop: SPACING.sm,
+      fontSize: FONT_SIZES.md,
+      color: colors.textMuted,
+    },
+    promptCard: {
+      paddingVertical: SPACING.xl,
+      paddingHorizontal: SPACING.lg,
+      borderRadius: BORDER_RADIUS.card,
+      backgroundColor: colors.card,
+      borderWidth: 1,
+      borderColor: colors.border,
+      marginBottom: SPACING.lg,
+      ...cardShadow,
+    },
+    prompt: {
+      fontSize: FONT_SIZES.md,
+      color: colors.textMuted,
+      marginBottom: SPACING.sm,
+    },
+    arabicWord: {
+      fontSize: 40,
+      lineHeight: 58,
+      fontWeight: FONT_WEIGHTS.extraBold,
+      color: colors.arabicWord,
+      textAlign: 'center',
+    },
+    options: {
+      gap: SPACING.sm,
+      marginBottom: SPACING.md,
+    },
+    feedback: {
+      padding: SPACING.md,
+      borderRadius: BORDER_RADIUS.lg,
+      borderWidth: 1,
+      marginBottom: SPACING.md,
+    },
+    feedbackCorrect: {
+      borderColor: colors.borderSuccess,
+      backgroundColor: colors.surfaceSuccess,
+    },
+    feedbackWrong: {
+      borderColor: colors.borderDanger,
+      backgroundColor: colors.surfaceDanger,
+    },
+    feedbackTitle: {
+      fontSize: FONT_SIZES.xl,
+      fontWeight: FONT_WEIGHTS.bold,
+    },
+    feedbackTitleCorrect: {
+      color: colors.primaryLight,
+    },
+    feedbackTitleWrong: {
+      color: colors.danger,
+    },
+    feedbackBody: {
+      marginTop: SPACING.xs,
+      fontSize: FONT_SIZES.md,
+      color: colors.text,
+    },
+    errorBanner: {
+      padding: SPACING.md,
+      borderRadius: BORDER_RADIUS.lg,
+      borderWidth: 1,
+      borderColor: colors.borderDanger,
+      backgroundColor: colors.surfaceDanger,
+      marginBottom: SPACING.md,
+      gap: SPACING.xs,
+    },
+    errorText: {
+      fontSize: FONT_SIZES.md,
+      color: colors.danger,
+    },
+    retryLink: {
+      fontSize: FONT_SIZES.md,
+      fontWeight: FONT_WEIGHTS.semibold,
+      color: colors.primary,
+    },
+    state: {
+      paddingHorizontal: SPACING.lg,
+    },
+    stateTitle: {
+      fontSize: FONT_SIZES.xxl,
+      fontWeight: FONT_WEIGHTS.bold,
+      color: colors.text,
+      marginBottom: SPACING.xs,
+      textAlign: 'center',
+    },
+    stateBody: {
+      fontSize: FONT_SIZES.md,
+      color: colors.textMuted,
+      textAlign: 'center',
+    },
+    stateButton: {
+      alignSelf: 'stretch',
+      marginTop: SPACING.md,
+    },
+  });
+}

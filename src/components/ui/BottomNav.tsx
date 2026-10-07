@@ -5,14 +5,9 @@ import { Keyboard, Platform, Pressable, StyleSheet, Text, View } from 'react-nat
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppIcon, type AppIconName } from '@/components/ui/AppIcon';
-import {
-  BORDER_RADIUS,
-  COLORS,
-  FONT_SIZES,
-  FONT_WEIGHTS,
-  ICON_SIZES,
-  SPACING,
-} from '@/constants/theme';
+import { type ThemeColors, BORDER_RADIUS, FONT_SIZES, FONT_WEIGHTS, ICON_SIZES, SPACING } from '@/constants/theme';
+import { useThemedStyles } from '@/theme/useThemedStyles';
+import { useTheme } from '@/theme/useTheme';
 import { createShadow } from '@/helpers/styleHelpers';
 
 type NavKey = 'home' | 'quiz' | 'review' | 'settings';
@@ -76,6 +71,9 @@ function useKeyboardVisible() {
 }
 
 export function BottomNav() {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
+
   const pathname = usePathname();
   const insets = useSafeAreaInsets();
   const isKeyboardVisible = useKeyboardVisible();
@@ -115,7 +113,7 @@ export function BottomNav() {
       <View style={[styles.bar, { paddingLeft: insets.left, paddingRight: insets.right }]}>
         {NAV_ITEMS.map((item) => {
           const isActive = item.key === currentSection;
-          const iconColor = isActive ? COLORS.primary : COLORS.textMuted;
+          const iconColor = isActive ? colors.primary : colors.textMuted;
 
           return (
             <Pressable
@@ -165,59 +163,60 @@ export function BottomNav() {
   );
 }
 
-const barShadow = createShadow(8, COLORS.accent, 0.06, 12, { width: 0, height: -4 });
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: COLORS.card,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: COLORS.border,
-    paddingTop: SPACING.sm - 2,
-    ...barShadow,
-  },
-  bar: {
-    flexDirection: 'row',
-    width: '100%',
-    maxWidth: NAV_MAX_WIDTH,
-    alignSelf: 'center',
-  },
-  item: {
-    flex: 1,
-    minWidth: 0,
-    minHeight: 52,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 2,
-    paddingHorizontal: SPACING.xs,
-  },
-  itemPressed: {
-    opacity: 0.85,
-  },
-  iconWrap: {
-    width: 52,
-    height: 30,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: BORDER_RADIUS.round,
-  },
-  iconWrapActive: {
-    backgroundColor: COLORS.surfaceMuted,
-    borderRadius: BORDER_RADIUS.xs,
-  },
-  iconWrapPressed: {
-    backgroundColor: COLORS.surfacePressed,
-  },
-  imageIcon: {
-    width: ICON_SIZES.lg,
-    height: ICON_SIZES.lg,
-  },
-  label: {
-    fontSize: FONT_SIZES.xs,
-    fontWeight: FONT_WEIGHTS.medium,
-    color: COLORS.textMuted,
-  },
-  labelActive: {
-    fontWeight: FONT_WEIGHTS.bold,
-    color: COLORS.primary,
-  },
-});
+function createStyles(colors: ThemeColors) {
+  const barShadow = createShadow(8, colors.shadow, 0.06, 12, { width: 0, height: -4 });
+  return StyleSheet.create({
+    container: {
+      backgroundColor: colors.card,
+      borderTopWidth: StyleSheet.hairlineWidth,
+      borderTopColor: colors.border,
+      paddingTop: SPACING.sm - 2,
+      ...barShadow,
+    },
+    bar: {
+      flexDirection: 'row',
+      width: '100%',
+      maxWidth: NAV_MAX_WIDTH,
+      alignSelf: 'center',
+    },
+    item: {
+      flex: 1,
+      minWidth: 0,
+      minHeight: 52,
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 2,
+      paddingHorizontal: SPACING.xs,
+    },
+    itemPressed: {
+      opacity: 0.85,
+    },
+    iconWrap: {
+      width: 52,
+      height: 30,
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderRadius: BORDER_RADIUS.round,
+    },
+    iconWrapActive: {
+      backgroundColor: colors.surfaceMuted,
+      borderRadius: BORDER_RADIUS.xs,
+    },
+    iconWrapPressed: {
+      backgroundColor: colors.surfacePressed,
+    },
+    imageIcon: {
+      width: ICON_SIZES.lg,
+      height: ICON_SIZES.lg,
+    },
+    label: {
+      fontSize: FONT_SIZES.xs,
+      fontWeight: FONT_WEIGHTS.medium,
+      color: colors.textMuted,
+    },
+    labelActive: {
+      fontWeight: FONT_WEIGHTS.bold,
+      color: colors.primary,
+    },
+  });
+}

@@ -1,12 +1,31 @@
 import { ScrollView, StyleSheet, View, type ViewProps } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { COLORS, SPACING } from '@/constants/theme';
+import { SPACING, type ThemeColors } from '@/constants/theme';
+import { useThemedStyles } from '@/theme/useThemedStyles';
 
 type ScreenScaffoldProps = ViewProps & {
   scroll?: boolean;
   contentContainerStyle?: ViewProps['style'];
 };
+
+function createStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    safeArea: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    content: {
+      flexGrow: 1,
+      paddingHorizontal: SPACING.lg,
+      paddingTop: SPACING.lg,
+      paddingBottom: SPACING.section,
+    },
+    flex: {
+      flex: 1,
+    },
+  });
+}
 
 export function ScreenScaffold({
   children,
@@ -15,6 +34,8 @@ export function ScreenScaffold({
   contentContainerStyle,
   ...viewProps
 }: ScreenScaffoldProps) {
+  const styles = useThemedStyles(createStyles);
+
   if (scroll) {
     return (
       <SafeAreaView style={styles.safeArea}>
@@ -33,25 +54,12 @@ export function ScreenScaffold({
 
   return (
     <SafeAreaView style={[styles.safeArea, styles.flex]}>
-      <View style={[styles.content, styles.flex, contentContainerStyle, style]} {...viewProps}>
+      <View
+        style={[styles.content, styles.flex, contentContainerStyle, style]}
+        {...viewProps}
+      >
         {children}
       </View>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-  },
-  content: {
-    flexGrow: 1,
-    paddingHorizontal: SPACING.lg,
-    paddingTop: SPACING.lg,
-    paddingBottom: SPACING.section,
-  },
-  flex: {
-    flex: 1,
-  },
-});

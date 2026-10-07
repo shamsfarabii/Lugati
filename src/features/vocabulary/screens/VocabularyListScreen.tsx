@@ -15,15 +15,9 @@ import { IconButton } from '@/components/ui/IconButton';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { ScreenScaffold } from '@/components/ui/ScreenScaffold';
-import {
-  BORDER_RADIUS,
-  COLORS,
-  FONT_SIZES,
-  FONT_WEIGHTS,
-  ICON_SIZES,
-  SIZES,
-  SPACING,
-} from '@/constants/theme';
+import { type ThemeColors, BORDER_RADIUS, FONT_SIZES, FONT_WEIGHTS, ICON_SIZES, SIZES, SPACING } from '@/constants/theme';
+import { useThemedStyles } from '@/theme/useThemedStyles';
+import { useTheme } from '@/theme/useTheme';
 import type { Vocabulary } from '@/features/vocabulary/types';
 import {
   importVocabularyFromFile,
@@ -47,6 +41,9 @@ const EXPORT_ICON = require('../../../../assets/icons/export.svg') as number;
 type SelectionPurpose = 'export' | 'delete';
 
 export function VocabularyListScreen() {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
+
   const [searchQuery, setSearchQuery] = useState('');
   const [items, setItems] = useState<Vocabulary[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -390,12 +387,12 @@ export function VocabularyListScreen() {
         <AppIcon
           name="plus"
           size={ICON_SIZES.lg}
-          color={COLORS.textOnPrimary}
+          color={colors.textOnPrimary}
           weight="bold"
         />
       </Pressable>
     );
-  }, [exitSelectionMode, isSelectionMode]);
+  }, [colors.textOnPrimary, exitSelectionMode, isSelectionMode, styles]);
 
   return (
     <ScreenScaffold scroll={false}>
@@ -420,13 +417,13 @@ export function VocabularyListScreen() {
 
       {!isSelectionMode ? (
         <View style={[commonStyles.row, commonStyles.alignCenter, styles.searchBar]}>
-          <AppIcon name="search" size={ICON_SIZES.sm} color={COLORS.textMuted} weight="semibold" />
+          <AppIcon name="search" size={ICON_SIZES.sm} color={colors.textMuted} weight="semibold" />
           <TextInput
             value={searchQuery}
             onChangeText={setSearchQuery}
             placeholder="Search Arabic or meaning"
-            placeholderTextColor={COLORS.textMutedSecondary}
-            selectionColor={COLORS.primary}
+            placeholderTextColor={colors.textMutedSecondary}
+            selectionColor={colors.primary}
             style={styles.searchInput}
             autoCorrect={false}
             autoCapitalize="none"
@@ -444,7 +441,7 @@ export function VocabularyListScreen() {
               <AppIcon
                 name="xmarkCircle"
                 size={ICON_SIZES.md}
-                color={COLORS.chevron}
+                color={colors.chevron}
                 weight="regular"
               />
             </Pressable>
@@ -507,7 +504,7 @@ export function VocabularyListScreen() {
 
       {isBusy ? (
         <View style={[commonStyles.row, commonStyles.alignCenter, styles.busyBanner]}>
-          <ActivityIndicator color={COLORS.primary} size="small" />
+          <ActivityIndicator color={colors.primary} size="small" />
           <Text style={styles.busyBannerText}>
             {isShareBusy ? 'Preparing export…' : isImportBusy ? 'Importing…' : 'Deleting…'}
           </Text>
@@ -516,14 +513,14 @@ export function VocabularyListScreen() {
 
       {isLoading && items.length === 0 ? (
         <View style={[commonStyles.grow, commonStyles.centered]}>
-          <ActivityIndicator color={COLORS.primary} />
+          <ActivityIndicator color={colors.primary} />
         </View>
       ) : null}
 
       {!isLoading && loadError ? (
         <View style={styles.emptyState}>
           <View style={[styles.emptyIcon, styles.emptyIconDanger, commonStyles.centered]}>
-            <AppIcon name="warning" size={ICON_SIZES.xxl} color={COLORS.danger} />
+            <AppIcon name="warning" size={ICON_SIZES.xxl} color={colors.danger} />
           </View>
           <Text style={styles.emptyTitle}>Could not load vocabulary</Text>
           <Text style={styles.emptyBody}>{loadError}</Text>
@@ -539,7 +536,7 @@ export function VocabularyListScreen() {
       {!isLoading && !loadError && items.length === 0 && isSearching ? (
         <View style={styles.emptyState}>
           <View style={[styles.emptyIcon, commonStyles.centered]}>
-            <AppIcon name="search" size={ICON_SIZES.xxl} color={COLORS.primary} />
+            <AppIcon name="search" size={ICON_SIZES.xxl} color={colors.primary} />
           </View>
           <Text style={styles.emptyTitle}>No matches</Text>
           <Text style={styles.emptyBody}>
@@ -559,7 +556,7 @@ export function VocabularyListScreen() {
       {!isLoading && !loadError && items.length === 0 && !isSearching ? (
         <View style={styles.emptyState}>
           <View style={[styles.emptyIcon, commonStyles.centered]}>
-            <AppIcon name="book" size={ICON_SIZES.xxl} color={COLORS.primary} />
+            <AppIcon name="book" size={ICON_SIZES.xxl} color={colors.primary} />
           </View>
           <Text style={styles.emptyTitle}>No vocabulary yet</Text>
           <Text style={styles.emptyBody}>
@@ -569,7 +566,7 @@ export function VocabularyListScreen() {
             label="Add a word"
             onPress={() => router.push('/vocabulary/new')}
             leading={
-              <AppIcon name="plus" size={ICON_SIZES.md} color={COLORS.textOnPrimary} weight="bold" />
+              <AppIcon name="plus" size={ICON_SIZES.md} color={colors.textOnPrimary} weight="bold" />
             }
             style={styles.emptyButton}
           />
@@ -578,7 +575,7 @@ export function VocabularyListScreen() {
             onPress={handleImport}
             variant="secondary"
             leading={
-              <AppIcon name="importDoc" size={ICON_SIZES.md} color={COLORS.primary} weight="bold" />
+              <AppIcon name="importDoc" size={ICON_SIZES.md} color={colors.primary} weight="bold" />
             }
             style={styles.emptyButtonSecondary}
           />
@@ -636,9 +633,9 @@ export function VocabularyListScreen() {
                       color={
                         isSelected
                           ? selectionPurpose === 'delete'
-                            ? COLORS.danger
-                            : COLORS.primary
-                          : COLORS.chevron
+                            ? colors.danger
+                            : colors.primary
+                          : colors.chevron
                       }
                       weight="semibold"
                     />
@@ -663,7 +660,7 @@ export function VocabularyListScreen() {
                     <AppIcon
                       name="chevronRight"
                       size={ICON_SIZES.sm - 2}
-                      color={COLORS.chevron}
+                      color={colors.chevron}
                       weight="bold"
                     />
                   ) : null}
@@ -687,7 +684,7 @@ export function VocabularyListScreen() {
               onPress={confirmDeleteSelected}
               disabled={isDeleteBusy || selectedCount === 0}
               leading={
-                <AppIcon name="trash" size={ICON_SIZES.md} color={COLORS.danger} weight="bold" />
+                <AppIcon name="trash" size={ICON_SIZES.md} color={colors.danger} weight="bold" />
               }
             />
           ) : (
@@ -706,7 +703,7 @@ export function VocabularyListScreen() {
               }}
               disabled={isShareBusy || selectedCount === 0}
               leading={
-                <AppIcon name="share" size={ICON_SIZES.md} color={COLORS.textOnPrimary} weight="bold" />
+                <AppIcon name="share" size={ICON_SIZES.md} color={colors.textOnPrimary} weight="bold" />
               }
             />
           )}
@@ -733,192 +730,193 @@ function describeVocabularyDetails(item: Vocabulary): string {
   return parts.join(' · ');
 }
 
-const listShadow = createShadow(2, COLORS.accent, 0.06, 4);
-
-const styles = StyleSheet.create({
-  headerTextAction: {
-    paddingHorizontal: SPACING.xs,
-    paddingVertical: SPACING.xs,
-    minHeight: SIZES.headerIconButton,
-    justifyContent: 'center',
-  },
-  headerTextActionLabel: {
-    fontSize: FONT_SIZES.md,
-    fontWeight: FONT_WEIGHTS.semibold,
-    color: COLORS.primary,
-  },
-  addIconButton: {
-    width: SIZES.headerIconButton,
-    height: SIZES.headerIconButton,
-    borderRadius: BORDER_RADIUS.sm,
-    backgroundColor: COLORS.primary,
-  },
-  addIconButtonPressed: {
-    backgroundColor: COLORS.primaryDark,
-  },
-  pressed: {
-    opacity: 0.6,
-  },
-  searchBar: {
-    minHeight: 46,
-    paddingHorizontal: SPACING.md - 2,
-    gap: SPACING.sm,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    borderRadius: BORDER_RADIUS.lg,
-    backgroundColor: COLORS.card,
-  },
-  searchInput: {
-    flex: 1,
-    minWidth: 0,
-    paddingVertical: SPACING.sm + 2,
-    fontSize: FONT_SIZES.lg,
-    color: COLORS.text,
-  },
-  toolbar: {
-    minHeight: SIZES.iconButton + SPACING.md,
-    marginTop: SPACING.sm,
-    marginBottom: SPACING.xs,
-    paddingHorizontal: SPACING.xs,
-  },
-  toolbarLabel: {
-    fontSize: FONT_SIZES.sm,
-    fontWeight: FONT_WEIGHTS.semibold,
-    color: COLORS.textMuted,
-    letterSpacing: 0.2,
-    fontVariant: ['tabular-nums'],
-  },
-  toolbarLink: {
-    fontSize: FONT_SIZES.md,
-    fontWeight: FONT_WEIGHTS.semibold,
-    color: COLORS.primary,
-  },
-  toolbarActions: {
-    gap: SPACING.sm,
-  },
-  toolbarButton: {
-    width: 36,
-    height: 36,
-  },
-  busyBanner: {
-    alignSelf: 'flex-start',
-    gap: SPACING.sm,
-    marginBottom: SPACING.sm,
-    paddingHorizontal: SPACING.md - 4,
-    paddingVertical: SPACING.xs + 2,
-    borderRadius: BORDER_RADIUS.round,
-    backgroundColor: COLORS.surfaceMuted,
-  },
-  busyBannerText: {
-    fontSize: FONT_SIZES.sm,
-    fontWeight: FONT_WEIGHTS.medium,
-    color: COLORS.primary,
-  },
-  listScroll: {
-    flex: 1,
-  },
-  listContent: {
-    paddingTop: SPACING.xs,
-    paddingBottom: SPACING.md,
-  },
-  listContentWithFooter: {
-    paddingBottom: SPACING.xl,
-  },
-  list: {
-    borderRadius: BORDER_RADIUS.xxl,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    backgroundColor: COLORS.card,
-    overflow: 'hidden',
-    ...listShadow,
-  },
-  row: {
-    minHeight: SIZES.wordRowMinHeight - 4,
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm + 2,
-    gap: SPACING.md - 4,
-  },
-  rowBorder: {
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.borderLight,
-  },
-  rowPressed: {
-    backgroundColor: COLORS.surfacePressed,
-  },
-  rowSelected: {
-    backgroundColor: COLORS.surfaceMuted,
-  },
-  rowText: {
-    flex: 1,
-    minWidth: 0,
-    gap: 2,
-  },
-  meaning: {
-    fontSize: FONT_SIZES.xl,
-    fontWeight: FONT_WEIGHTS.semibold,
-    color: COLORS.text,
-  },
-  rowMeta: {
-    fontSize: FONT_SIZES.xs,
-    fontWeight: FONT_WEIGHTS.medium,
-    color: COLORS.textMutedSecondary,
-  },
-  arabicWord: {
-    flexShrink: 1,
-    maxWidth: '50%',
-    fontSize: FONT_SIZES.display - 2,
-    fontWeight: FONT_WEIGHTS.semibold,
-    color: COLORS.arabicWord,
-    textAlign: 'right',
-    writingDirection: 'rtl',
-  },
-  emptyState: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: SPACING.lg,
-    paddingBottom: SPACING.section,
-  },
-  emptyIcon: {
-    width: 64,
-    height: 64,
-    marginBottom: SPACING.md,
-    borderRadius: BORDER_RADIUS.xxl,
-    backgroundColor: COLORS.surfaceMuted,
-  },
-  emptyIconDanger: {
-    backgroundColor: COLORS.surfaceDanger,
-  },
-  emptyTitle: {
-    fontSize: FONT_SIZES.xxxl,
-    fontWeight: FONT_WEIGHTS.bold,
-    color: COLORS.text,
-    marginBottom: SPACING.xs + 2,
-  },
-  emptyBody: {
-    maxWidth: 300,
-    fontSize: FONT_SIZES.md,
-    lineHeight: 20,
-    color: COLORS.textMuted,
-    textAlign: 'center',
-  },
-  emptyButton: {
-    marginTop: SPACING.lg,
-    alignSelf: 'stretch',
-  },
-  emptyButtonSecondary: {
-    marginTop: SPACING.sm,
-    alignSelf: 'stretch',
-  },
-  emptyLink: {
-    marginTop: SPACING.md,
-    fontSize: FONT_SIZES.md,
-    fontWeight: FONT_WEIGHTS.semibold,
-    color: COLORS.primary,
-  },
-  selectionFooter: {
-    paddingTop: SPACING.md,
-    borderTopWidth: 1,
-    borderTopColor: COLORS.borderLight,
-  },
-});
+function createStyles(colors: ThemeColors) {
+  const listShadow = createShadow(2, colors.shadow, 0.06, 4);
+  return StyleSheet.create({
+    headerTextAction: {
+      paddingHorizontal: SPACING.xs,
+      paddingVertical: SPACING.xs,
+      minHeight: SIZES.headerIconButton,
+      justifyContent: 'center',
+    },
+    headerTextActionLabel: {
+      fontSize: FONT_SIZES.md,
+      fontWeight: FONT_WEIGHTS.semibold,
+      color: colors.primary,
+    },
+    addIconButton: {
+      width: SIZES.headerIconButton,
+      height: SIZES.headerIconButton,
+      borderRadius: BORDER_RADIUS.sm,
+      backgroundColor: colors.primary,
+    },
+    addIconButtonPressed: {
+      backgroundColor: colors.primaryDark,
+    },
+    pressed: {
+      opacity: 0.6,
+    },
+    searchBar: {
+      minHeight: 46,
+      paddingHorizontal: SPACING.md - 2,
+      gap: SPACING.sm,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: BORDER_RADIUS.lg,
+      backgroundColor: colors.card,
+    },
+    searchInput: {
+      flex: 1,
+      minWidth: 0,
+      paddingVertical: SPACING.sm + 2,
+      fontSize: FONT_SIZES.lg,
+      color: colors.text,
+    },
+    toolbar: {
+      minHeight: SIZES.iconButton + SPACING.md,
+      marginTop: SPACING.sm,
+      marginBottom: SPACING.xs,
+      paddingHorizontal: SPACING.xs,
+    },
+    toolbarLabel: {
+      fontSize: FONT_SIZES.sm,
+      fontWeight: FONT_WEIGHTS.semibold,
+      color: colors.textMuted,
+      letterSpacing: 0.2,
+      fontVariant: ['tabular-nums'],
+    },
+    toolbarLink: {
+      fontSize: FONT_SIZES.md,
+      fontWeight: FONT_WEIGHTS.semibold,
+      color: colors.primary,
+    },
+    toolbarActions: {
+      gap: SPACING.sm,
+    },
+    toolbarButton: {
+      width: 36,
+      height: 36,
+    },
+    busyBanner: {
+      alignSelf: 'flex-start',
+      gap: SPACING.sm,
+      marginBottom: SPACING.sm,
+      paddingHorizontal: SPACING.md - 4,
+      paddingVertical: SPACING.xs + 2,
+      borderRadius: BORDER_RADIUS.round,
+      backgroundColor: colors.surfaceMuted,
+    },
+    busyBannerText: {
+      fontSize: FONT_SIZES.sm,
+      fontWeight: FONT_WEIGHTS.medium,
+      color: colors.primary,
+    },
+    listScroll: {
+      flex: 1,
+    },
+    listContent: {
+      paddingTop: SPACING.xs,
+      paddingBottom: SPACING.md,
+    },
+    listContentWithFooter: {
+      paddingBottom: SPACING.xl,
+    },
+    list: {
+      borderRadius: BORDER_RADIUS.xxl,
+      borderWidth: 1,
+      borderColor: colors.border,
+      backgroundColor: colors.card,
+      overflow: 'hidden',
+      ...listShadow,
+    },
+    row: {
+      minHeight: SIZES.wordRowMinHeight - 4,
+      paddingHorizontal: SPACING.md,
+      paddingVertical: SPACING.sm + 2,
+      gap: SPACING.md - 4,
+    },
+    rowBorder: {
+      borderBottomWidth: 1,
+      borderBottomColor: colors.borderLight,
+    },
+    rowPressed: {
+      backgroundColor: colors.surfacePressed,
+    },
+    rowSelected: {
+      backgroundColor: colors.surfaceMuted,
+    },
+    rowText: {
+      flex: 1,
+      minWidth: 0,
+      gap: 2,
+    },
+    meaning: {
+      fontSize: FONT_SIZES.xl,
+      fontWeight: FONT_WEIGHTS.semibold,
+      color: colors.text,
+    },
+    rowMeta: {
+      fontSize: FONT_SIZES.xs,
+      fontWeight: FONT_WEIGHTS.medium,
+      color: colors.textMutedSecondary,
+    },
+    arabicWord: {
+      flexShrink: 1,
+      maxWidth: '50%',
+      fontSize: FONT_SIZES.display - 2,
+      fontWeight: FONT_WEIGHTS.semibold,
+      color: colors.arabicWord,
+      textAlign: 'right',
+      writingDirection: 'rtl',
+    },
+    emptyState: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingHorizontal: SPACING.lg,
+      paddingBottom: SPACING.section,
+    },
+    emptyIcon: {
+      width: 64,
+      height: 64,
+      marginBottom: SPACING.md,
+      borderRadius: BORDER_RADIUS.xxl,
+      backgroundColor: colors.surfaceMuted,
+    },
+    emptyIconDanger: {
+      backgroundColor: colors.surfaceDanger,
+    },
+    emptyTitle: {
+      fontSize: FONT_SIZES.xxxl,
+      fontWeight: FONT_WEIGHTS.bold,
+      color: colors.text,
+      marginBottom: SPACING.xs + 2,
+    },
+    emptyBody: {
+      maxWidth: 300,
+      fontSize: FONT_SIZES.md,
+      lineHeight: 20,
+      color: colors.textMuted,
+      textAlign: 'center',
+    },
+    emptyButton: {
+      marginTop: SPACING.lg,
+      alignSelf: 'stretch',
+    },
+    emptyButtonSecondary: {
+      marginTop: SPACING.sm,
+      alignSelf: 'stretch',
+    },
+    emptyLink: {
+      marginTop: SPACING.md,
+      fontSize: FONT_SIZES.md,
+      fontWeight: FONT_WEIGHTS.semibold,
+      color: colors.primary,
+    },
+    selectionFooter: {
+      paddingTop: SPACING.md,
+      borderTopWidth: 1,
+      borderTopColor: colors.borderLight,
+    },
+  });
+}

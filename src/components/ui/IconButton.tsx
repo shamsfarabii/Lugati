@@ -2,12 +2,9 @@ import { Image } from 'expo-image';
 import { Pressable, StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
 
 import { AppIcon, type AppIconName } from '@/components/ui/AppIcon';
-import {
-  BORDER_RADIUS,
-  COLORS,
-  ICON_SIZES,
-  SIZES,
-} from '@/constants/theme';
+import { type ThemeColors, BORDER_RADIUS, ICON_SIZES, SIZES } from '@/constants/theme';
+import { useThemedStyles } from '@/theme/useThemedStyles';
+import { useTheme } from '@/theme/useTheme';
 import { commonStyles } from '@/styles/commonStyles';
 
 type IconButtonTone = 'neutral' | 'danger' | 'overlay';
@@ -25,12 +22,6 @@ type IconButtonProps = {
   tone?: IconButtonTone;
   disabled?: boolean;
   style?: StyleProp<ViewStyle>;
-};
-
-const TONE_ICON_COLOR: Record<IconButtonTone, string> = {
-  neutral: COLORS.textMuted,
-  danger: COLORS.danger,
-  overlay: COLORS.textOnPrimary,
 };
 
 function resolveIconButtonIcon(
@@ -52,8 +43,16 @@ export function IconButton({
   disabled = false,
   style,
 }: IconButtonProps) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
+
   const resolvedIcon = resolveIconButtonIcon(icon);
-  const iconColor = TONE_ICON_COLOR[tone];
+  const iconColor =
+    tone === 'neutral'
+      ? colors.textMuted
+      : tone === 'danger'
+        ? colors.danger
+        : colors.textOnPrimary;
 
   return (
     <Pressable
@@ -90,34 +89,36 @@ export function IconButton({
   );
 }
 
-const styles = StyleSheet.create({
-  base: {
-    width: SIZES.iconButton,
-    height: SIZES.iconButton,
-    borderRadius: BORDER_RADIUS.round,
-    borderWidth: 1,
-  },
-  neutral: {
-    backgroundColor: COLORS.surfaceMuted,
-    borderColor: COLORS.border,
-  },
-  danger: {
-    backgroundColor: COLORS.surfaceDanger,
-    borderColor: COLORS.borderDanger,
-  },
-  overlay: {
-    backgroundColor: COLORS.imageScrim,
-    borderColor: COLORS.decorationOverlay,
-  },
-  disabled: {
-    opacity: 0.4,
-  },
-  pressed: {
-    opacity: 0.7,
-    transform: [{ scale: 0.96 }],
-  },
-  imageIcon: {
-    width: ICON_SIZES.sm,
-    height: ICON_SIZES.sm,
-  },
-});
+function createStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    base: {
+      width: SIZES.iconButton,
+      height: SIZES.iconButton,
+      borderRadius: BORDER_RADIUS.round,
+      borderWidth: 1,
+    },
+    neutral: {
+      backgroundColor: colors.surfaceMuted,
+      borderColor: colors.border,
+    },
+    danger: {
+      backgroundColor: colors.surfaceDanger,
+      borderColor: colors.borderDanger,
+    },
+    overlay: {
+      backgroundColor: colors.imageScrim,
+      borderColor: colors.decorationOverlay,
+    },
+    disabled: {
+      opacity: 0.4,
+    },
+    pressed: {
+      opacity: 0.7,
+      transform: [{ scale: 0.96 }],
+    },
+    imageIcon: {
+      width: ICON_SIZES.sm,
+      height: ICON_SIZES.sm,
+    },
+  });
+}

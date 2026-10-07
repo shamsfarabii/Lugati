@@ -1,12 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import {
-  BORDER_RADIUS,
-  COLORS,
-  FONT_SIZES,
-  FONT_WEIGHTS,
-  SPACING,
-} from '@/constants/theme';
+import { type ThemeColors, BORDER_RADIUS, FONT_SIZES, FONT_WEIGHTS, SPACING } from '@/constants/theme';
+import { useThemedStyles } from '@/theme/useThemedStyles';
 import { commonStyles } from '@/styles/commonStyles';
 
 type QuizProgressProps = {
@@ -22,6 +17,8 @@ export function QuizProgress({
   correctCount,
   answeredCount,
 }: QuizProgressProps) {
+  const styles = useThemedStyles(createStyles);
+
   const completedRatio = totalQuestions === 0 ? 0 : (questionNumber - 1) / totalQuestions;
 
   return (
@@ -45,29 +42,31 @@ export function QuizProgress({
   );
 }
 
-const styles = StyleSheet.create({
-  wrapper: {
-    gap: SPACING.sm,
-    marginBottom: SPACING.md,
-  },
-  position: {
-    fontSize: FONT_SIZES.md,
-    fontWeight: FONT_WEIGHTS.semibold,
-    color: COLORS.text,
-  },
-  score: {
-    fontSize: FONT_SIZES.md,
-    color: COLORS.textMuted,
-  },
-  track: {
-    height: 4,
-    borderRadius: BORDER_RADIUS.round,
-    backgroundColor: COLORS.border,
-    overflow: 'hidden',
-  },
-  fill: {
-    height: '100%',
-    borderRadius: BORDER_RADIUS.round,
-    backgroundColor: COLORS.primary,
-  },
-});
+function createStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    wrapper: {
+      gap: SPACING.sm,
+      marginBottom: SPACING.md,
+    },
+    position: {
+      fontSize: FONT_SIZES.md,
+      fontWeight: FONT_WEIGHTS.semibold,
+      color: colors.text,
+    },
+    score: {
+      fontSize: FONT_SIZES.md,
+      color: colors.textMuted,
+    },
+    track: {
+      height: 4,
+      borderRadius: BORDER_RADIUS.round,
+      backgroundColor: colors.border,
+      overflow: 'hidden',
+    },
+    fill: {
+      height: '100%',
+      borderRadius: BORDER_RADIUS.round,
+      backgroundColor: colors.primary,
+    },
+  });
+}
