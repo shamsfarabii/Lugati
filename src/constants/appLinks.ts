@@ -3,7 +3,8 @@ export const GITHUB_REPOSITORY = 'shamsfarabii/Lugati' as const;
 export const GITHUB_RELEASES_PAGE_URL =
   `https://github.com/${GITHUB_REPOSITORY}/releases/latest` as const;
 
-export const RELEASE_APK_ASSET_NAME = 'Lugati.apk' as const;
+
+export const RELEASE_APK_ARM64_ASSET_NAME = 'Lugati-arm64-v8a.apk' as const;
 
 export const LATEST_APK_DOWNLOAD_URL =
-  `${GITHUB_RELEASES_PAGE_URL}/download/${RELEASE_APK_ASSET_NAME}` as const;
+  `${GITHUB_RELEASES_PAGE_URL}/download/${RELEASE_APK_ARM64_ASSET_NAME}` as const;

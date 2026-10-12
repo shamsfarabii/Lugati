@@ -49,21 +49,34 @@ jobs:
       - name: Build release APK
         run: npm run build:apk
 
-      - name: Prepare release asset
-        run: cp android/app/build/outputs/apk/release/app-release.apk Lugati.apk
+      - name: Prepare release assets
+        run: |
+          set -euo pipefail
+          mkdir -p release-apks
+          shopt -s nullglob
+          apks=(android/app/build/outputs/apk/release/app-*-release.apk)
+          if [ ${#apks[@]} -eq 0 ]; then
+            echo "No per-ABI APKs found under android/app/build/outputs/apk/release/"
+            exit 1
+          fi
+          for apk in "${apks[@]}"; do
+            abi=$(basename "$apk" | sed -E 's/app-(.+)-release\.apk/\1/')
+            cp "$apk" "release-apks/Lugati-${abi}.apk"
+          done
+          ls -la release-apks/
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: lugati-apk-${{ github.run_number }}
-          path: Lugati.apk
+          path: release-apks/*.apk
           retention-days: 90
         if: github.ref == 'refs/heads/main'
 
       - name: Publish GitHub release
         uses: softprops/action-gh-release@v2
         with:
-          files: Lugati.apk
+          files: release-apks/*.apk
           generate_release_notes: true
           tag_name: ${{ github.ref_name }}
           name: ${{ github.ref_name }}
@@ -74,6 +87,6 @@ jobs:
         with:
           tag_name: manual-${{ github.run_number }}
           name: Manual build ${{ github.run_number }}
-          files: Lugati.apk
+          files: release-apks/*.apk
           generate_release_notes: true
         if: github.event_name == 'workflow_dispatch'

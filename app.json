@@ -45,7 +45,8 @@
         }
       ],
       "expo-sqlite",
-      "expo-sharing"
+      "expo-sharing",
+      "./plugins/withAndroidAbiSplits"
     ],
     "experiments": {
       "typedRoutes": true,

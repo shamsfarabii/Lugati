@@ -108,8 +108,12 @@ Screens (UI)  →  Services (rules)  →  Repositories (SQL)  →  SQLite
 
 Anyone can install the latest Android build from GitHub—no account required in the app itself.
 
-- **Latest APK:** [github.com/shamsfarabii/Lugati/releases/latest/download/Lugati.apk](https://github.com/shamsfarabii/Lugati/releases/latest/download/Lugati.apk)
+- **Latest APK (most phones, ARM64):** [Lugati-arm64-v8a.apk](https://github.com/shamsfarabii/Lugati/releases/latest/download/Lugati-arm64-v8a.apk)
+- **Older ARM devices:** [Lugati-armeabi-v7a.apk](https://github.com/shamsfarabii/Lugati/releases/latest/download/Lugati-armeabi-v7a.apk)
+- **Emulators (x86 / x86_64):** [Lugati-x86.apk](https://github.com/shamsfarabii/Lugati/releases/latest/download/Lugati-x86.apk), [Lugati-x86_64.apk](https://github.com/shamsfarabii/Lugati/releases/latest/download/Lugati-x86_64.apk)
 - **All releases:** [github.com/shamsfarabii/Lugati/releases/latest](https://github.com/shamsfarabii/Lugati/releases/latest)
+
+Release builds are split by CPU architecture so each APK is smaller than a single universal package.
 
 Inside the app, open **Settings** for the same download links.
 
