@@ -9,6 +9,7 @@ export type AppIconName =
   | 'plus'
   | 'photo'
   | 'checkmarkCircle'
+  | 'checkmark'
   | 'circle'
   | 'share'
   | 'importDoc'
@@ -63,6 +64,11 @@ const ICON_NAMES: Record<AppIconName, SymbolViewProps['name']> = {
     ios: 'checkmark.circle.fill',
     android: 'check_circle',
     web: 'check_circle',
+  },
+  checkmark: {
+    ios: 'checkmark',
+    android: 'check',
+    web: 'check',
   },
   circle: {
     ios: 'circle',
