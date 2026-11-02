@@ -1,5 +1,5 @@
-import { useNavigation } from 'expo-router';
-import { useCallback, useEffect, useRef } from 'react';
+import { usePreventRemove } from 'expo-router';
+import { useCallback, useState } from 'react';
 import { appAlert } from '@/utils/appAlert';
 
 type GuardCopy = {
@@ -12,34 +12,27 @@ export function useUnsavedChangesGuard(
   hasUnsavedChanges: boolean,
   { title, message, discardLabel = 'Discard' }: GuardCopy,
 ) {
-  const navigation = useNavigation();
-  const bypassRef = useRef(false);
+  const [bypass, setBypass] = useState(false);
 
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('beforeRemove', (event) => {
-      if (!hasUnsavedChanges || bypassRef.current) {
-        return;
-      }
-
-      event.preventDefault();
-
+  const disablePrevention = usePreventRemove(
+    hasUnsavedChanges && !bypass,
+    ({ repeat }) => {
       appAlert(title, message, [
         { text: 'Keep editing', style: 'cancel' },
         {
           text: discardLabel,
           style: 'destructive',
           onPress: () => {
-            bypassRef.current = true;
-            navigation.dispatch(event.data.action);
+            setBypass(true);
+            repeat();
           },
         },
       ]);
-    });
-
-    return unsubscribe;
-  }, [navigation, hasUnsavedChanges, title, message, discardLabel]);
+    },
+  );
 
   return useCallback(() => {
-    bypassRef.current = true;
-  }, []);
+    setBypass(true);
+    disablePrevention();
+  }, [disablePrevention]);
 }

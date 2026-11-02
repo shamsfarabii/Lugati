@@ -16,7 +16,7 @@ import { ThemeContext, type ThemeContextValue } from '@/theme/useTheme';
 
 function resolveColorScheme(
   preference: AppearancePreference,
-  systemScheme: ColorSchemeName,
+  systemScheme: ColorSchemeName | null | undefined,
 ): ColorScheme {
   if (preference !== 'system') {
     return preference;

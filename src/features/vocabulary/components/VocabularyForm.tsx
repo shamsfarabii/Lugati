@@ -10,7 +10,14 @@ import {
   type SubmitErrorHandler,
   type SubmitHandler,
 } from 'react-hook-form';
-import { Linking, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import {
+  Linking,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+  type TextInputInstance,
+} from 'react-native';
 
 import { AppIcon } from '@/components/ui/AppIcon';
 import { FormSection } from '@/components/ui/FormSection';
@@ -36,12 +43,18 @@ import { createShadow } from '@/helpers/styleHelpers';
 import { appAlert } from '@/utils/appAlert';
 import { commonStyles } from '@/styles/commonStyles';
 
+export type VocabularyFormSubmitAction = {
+  submit: () => void;
+  isSubmitting: boolean;
+};
+
 type VocabularyFormProps = {
   initialValues?: Partial<VocabularyFormValues>;
   submitLabel: string;
   onSubmit: (values: VocabularyValidatedInput) => Promise<void>;
   onDelete?: () => void;
   onDirtyChange?: (isDirty: boolean) => void;
+  onSubmitActionChange?: (action: VocabularyFormSubmitAction | null) => void;
 };
 
 const emptyDefaults: VocabularyFormValues = {
@@ -73,6 +86,7 @@ export function VocabularyForm({
   onSubmit,
   onDelete,
   onDirtyChange,
+  onSubmitActionChange,
 }: VocabularyFormProps) {
   const { colors } = useTheme();
   const styles = useThemedStyles(createStyles);
@@ -99,8 +113,8 @@ export function VocabularyForm({
     name: 'examples',
   });
 
-  const arabicWordRef = useRef<TextInput>(null);
-  const meaningRef = useRef<TextInput>(null);
+  const arabicWordRef = useRef<TextInputInstance>(null);
+  const meaningRef = useRef<TextInputInstance>(null);
 
   const imageUri = useWatch({ control, name: 'imageUri' });
   const arabicWordPreview = useWatch({ control, name: 'arabicWord' })?.trim() ?? '';
@@ -189,6 +203,23 @@ export function VocabularyForm({
       meaningRef.current?.focus();
     }
   }, []);
+
+  const submitForm = useCallback(
+    () => void handleSubmit(submitValues, focusFirstInvalidField)(),
+    [focusFirstInvalidField, handleSubmit, submitValues],
+  );
+
+  useEffect(() => {
+    if (!onSubmitActionChange) {
+      return;
+    }
+
+    onSubmitActionChange({ submit: submitForm, isSubmitting });
+
+    return () => {
+      onSubmitActionChange(null);
+    };
+  }, [isSubmitting, onSubmitActionChange, submitForm]);
 
   return (
     <View style={styles.form}>
@@ -454,7 +485,7 @@ export function VocabularyForm({
       <View style={styles.actions}>
         <PrimaryButton
           label={isSubmitting ? 'Saving…' : submitLabel}
-          onPress={() => void handleSubmit(submitValues, focusFirstInvalidField)()}
+          onPress={submitForm}
           loading={isSubmitting}
           accessibilityHint="Saves this word to your vocabulary list"
         />

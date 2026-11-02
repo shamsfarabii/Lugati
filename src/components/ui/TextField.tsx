@@ -1,15 +1,18 @@
-import { useState, type ReactNode, type Ref } from 'react';
+import { useRef, useState, type ReactNode, type Ref } from 'react';
 import {
   StyleSheet,
   Text,
   TextInput,
   View,
   type StyleProp,
+  type TextInputInstance,
   type TextInputProps,
+  type ViewInstance,
   type ViewStyle,
 } from 'react-native';
 
 import { AppIcon } from '@/components/ui/AppIcon';
+import { useFormScroll } from '@/components/ui/formScrollContext';
 import { type ThemeColors, BORDER_RADIUS, FONT_SIZES, FONT_WEIGHTS, ICON_SIZES, SPACING } from '@/constants/theme';
 import { useThemedStyles } from '@/theme/useThemedStyles';
 import { useTheme } from '@/theme/useTheme';
@@ -26,7 +29,7 @@ type TextFieldProps = TextInputProps & {
   showCounter?: boolean;
   containerStyle?: StyleProp<ViewStyle>;
   labelAccessory?: ReactNode;
-  ref?: Ref<TextInput>;
+  ref?: Ref<TextInputInstance>;
 };
 
 export function TextField({
@@ -47,6 +50,8 @@ export function TextField({
 }: TextFieldProps) {
   const { colors } = useTheme();
   const styles = useThemedStyles(createStyles);
+  const formScroll = useFormScroll();
+  const fieldWrapperRef = useRef<ViewInstance>(null);
 
   const [isFocused, setIsFocused] = useState(false);
   const hasError = Boolean(errorMessage);
@@ -55,6 +60,7 @@ export function TextField({
 
   const handleFocus: FocusHandler = (event) => {
     setIsFocused(true);
+    formScroll?.scrollToView(fieldWrapperRef.current);
     onFocus?.(event);
   };
 
@@ -64,7 +70,7 @@ export function TextField({
   };
 
   return (
-    <View style={[styles.wrapper, containerStyle]}>
+    <View ref={fieldWrapperRef} style={[styles.wrapper, containerStyle]} collapsable={false}>
       <View style={[commonStyles.row, commonStyles.alignCenter, styles.labelRow]}>
         <Text style={styles.label}>
           {label}

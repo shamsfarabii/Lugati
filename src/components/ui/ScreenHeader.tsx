@@ -1,8 +1,24 @@
 import type { ReactNode } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import {
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+  type StyleProp,
+  type TextStyle,
+  type ViewStyle,
+} from 'react-native';
 
 import { AppIcon } from '@/components/ui/AppIcon';
-import { type ThemeColors, BORDER_RADIUS, FONT_SIZES, FONT_WEIGHTS, ICON_SIZES, SIZES, SPACING } from '@/constants/theme';
+import {
+  type ThemeColors,
+  BORDER_RADIUS,
+  FONT_SIZES,
+  FONT_WEIGHTS,
+  ICON_SIZES,
+  SIZES,
+  SPACING,
+} from '@/constants/theme';
 import { useThemedStyles } from '@/theme/useThemedStyles';
 import { useTheme } from '@/theme/useTheme';
 import { commonStyles } from '@/styles/commonStyles';
@@ -12,6 +28,7 @@ type ScreenHeaderProps = {
   subtitle?: string;
   onBack?: () => void;
   rightAction?: ReactNode;
+  style?: StyleProp<ViewStyle>;
 };
 
 export function ScreenHeader({
@@ -19,12 +36,13 @@ export function ScreenHeader({
   subtitle,
   onBack,
   rightAction,
+  style,
 }: ScreenHeaderProps) {
   const { colors } = useTheme();
   const styles = useThemedStyles(createStyles);
 
   return (
-    <View style={styles.wrapper}>
+    <View style={[styles.wrapper, style]}>
       <View style={[commonStyles.row, commonStyles.alignCenter, styles.header]}>
         {onBack ? (
           <Pressable
@@ -57,9 +75,22 @@ export function ScreenHeader({
         </View>
       </View>
 
-      {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
+      {subtitle ? <ScreenSubtitle text={subtitle} /> : null}
     </View>
   );
+}
+
+/** Standalone subtitle, for screens whose header is sticky but whose subtitle should scroll. */
+export function ScreenSubtitle({
+  text,
+  style,
+}: {
+  text: string;
+  style?: StyleProp<TextStyle>;
+}) {
+  const styles = useThemedStyles(createStyles);
+
+  return <Text style={[styles.subtitle, style]}>{text}</Text>;
 }
 
 function createStyles(colors: ThemeColors) {
